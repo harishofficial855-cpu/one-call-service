@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store';
-import { Menu, X, LogOut, LayoutDashboard, Briefcase, Settings, Phone } from 'lucide-react';
+import { Menu, X, LogOut, LayoutDashboard, Briefcase, Settings } from 'lucide-react';
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -23,9 +23,11 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-18 py-3">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:shadow-amber-500/50 transition-all">
-              <Phone className="w-5 h-5 text-white" />
-            </div>
+            <img
+              src="https://static.vecteezy.com/system/resources/previews/004/697/926/original/modern-and-professional-call-center-logo-design-free-vector.jpg"
+              alt="One Call Service"
+              className="h-12 w-12 rounded-xl object-cover shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/40 transition-all"
+            />
             <div>
               <span className="text-xl font-black text-white tracking-tight">ONE CALL</span>
               <p className="text-xs text-amber-400 font-semibold tracking-widest uppercase">Premium Services</p>

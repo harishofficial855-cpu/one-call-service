@@ -30,6 +30,124 @@ const features = [
   { icon: Users, title: '24/7 Support', desc: 'Round-the-clock customer assistance' },
 ];
 
+const SLIDES = [
+  {
+    video: 'https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4',
+    tag: 'Professional Home Services',
+    title: 'Expert Services',
+    highlight: 'At Your Door',
+    sub: 'Book verified professionals for all your home needs. Fast, reliable, and affordable.',
+  },
+  {
+    video: 'https://videos.pexels.com/video-files/4253925/4253925-uhd_2560_1440_25fps.mp4',
+    tag: 'Trusted & Verified Experts',
+    title: 'Quality Work,',
+    highlight: 'Guaranteed Results',
+    sub: 'All our service providers are background-checked, trained, and certified professionals.',
+  },
+  {
+    video: 'https://videos.pexels.com/video-files/3209828/3209828-uhd_2560_1440_25fps.mp4',
+    tag: 'Book in 60 Seconds',
+    title: 'One Call,',
+    highlight: 'All Solutions',
+    sub: 'From plumbing to cleaning, electrical to haircuts — we cover every home service need.',
+  },
+];
+
+function HeroSlider() {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrent(p => (p + 1) % SLIDES.length), 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const slide = SLIDES[current];
+
+  return (
+    <section className="relative overflow-hidden min-h-screen flex items-center">
+      {/* Video backgrounds */}
+      {SLIDES.map((s, i) => (
+        <video
+          key={i}
+          src={s.video}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+            i === current ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      ))}
+
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
+
+      {/* Content */}
+      <div className="container-custom relative z-10 py-24">
+        <div className="max-w-3xl">
+          <div
+            key={current}
+            className="animate-fade-in"
+          >
+            <div className="inline-flex items-center space-x-2 bg-amber-500/20 border border-amber-500/40 rounded-full px-4 py-2 mb-6 backdrop-blur-sm">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span className="text-amber-300 text-sm font-semibold">{slide.tag}</span>
+            </div>
+
+            <h1 className="text-5xl md:text-7xl font-black text-white leading-tight mb-6 drop-shadow-2xl">
+              {slide.title}
+              <br />
+              <span className="gradient-text">{slide.highlight}</span>
+            </h1>
+
+            <p className="text-xl text-slate-200 mb-10 max-w-xl leading-relaxed drop-shadow-lg">
+              {slide.sub}
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 mb-14">
+            <Link to="/booking" className="btn-primary flex items-center justify-center space-x-2 text-base">
+              <span>Book a Service</span>
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link to="/services" className="btn-secondary flex items-center justify-center space-x-2 text-base backdrop-blur-sm">
+              <span>Explore Services</span>
+            </Link>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+            {stats.map((s) => (
+              <div key={s.label}>
+                <p className="text-3xl font-black text-amber-400 drop-shadow-lg">{s.value}</p>
+                <p className="text-slate-300 text-sm mt-1">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Slide dots */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+        {SLIDES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            className={`transition-all rounded-full ${
+              i === current
+                ? 'w-8 h-2 bg-amber-400'
+                : 'w-2 h-2 bg-white/40 hover:bg-white/70'
+            }`}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const [services, setServices] = useState([]);
   const [editService, setEditService] = useState(null);
@@ -54,54 +172,8 @@ export default function Home() {
 
   return (
     <div className="w-full bg-slate-900">
-      {/* Hero */}
-      <section className="relative hero-gradient overflow-hidden min-h-screen flex items-center">
-        {/* Background decorations */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 right-10 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 left-10 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/3 rounded-full blur-3xl" />
-        </div>
-
-        <div className="container-custom relative z-10 py-20">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center space-x-2 bg-amber-500/10 border border-amber-500/30 rounded-full px-4 py-2 mb-6">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <span className="text-amber-400 text-sm font-semibold">Premium Home Services Platform</span>
-            </div>
-
-            <h1 className="text-5xl md:text-7xl font-black text-white leading-tight mb-6">
-              Expert Services
-              <br />
-              <span className="gradient-text">At Your Door</span>
-            </h1>
-
-            <p className="text-xl text-slate-400 mb-10 max-w-xl leading-relaxed">
-              Book verified professionals for all your home needs. Fast, reliable, and affordable services with real-time tracking.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Link to="/booking" className="btn-primary flex items-center justify-center space-x-2 text-base">
-                <span>Book a Service</span>
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link to="/services" className="btn-secondary flex items-center justify-center space-x-2 text-base">
-                <span>Explore Services</span>
-              </Link>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-              {stats.map((s) => (
-                <div key={s.label}>
-                  <p className="text-3xl font-black text-amber-400">{s.value}</p>
-                  <p className="text-slate-400 text-sm mt-1">{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero — Video Background Slider */}
+      <HeroSlider />
 
       {/* How It Works */}
       <section className="py-20 bg-slate-800/30">

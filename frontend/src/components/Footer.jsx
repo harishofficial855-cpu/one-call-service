@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Phone as PhoneIcon } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -9,9 +9,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           <div className="md:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center">
-                <PhoneIcon className="w-5 h-5 text-white" />
-              </div>
+              <img
+                src="https://static.vecteezy.com/system/resources/previews/004/697/926/original/modern-and-professional-call-center-logo-design-free-vector.jpg"
+                alt="One Call Service"
+                className="h-12 w-12 rounded-xl object-cover"
+              />
               <div>
                 <p className="text-white font-black text-lg">ONE CALL</p>
                 <p className="text-amber-400 text-xs font-semibold tracking-widest uppercase">Premium Services</p>
