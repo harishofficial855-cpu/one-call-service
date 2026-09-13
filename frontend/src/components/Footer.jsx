@@ -7,6 +7,8 @@ export default function Footer() {
     <footer className="bg-slate-900 border-t border-slate-800">
       <div className="container-custom py-14">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+
+          {/* Brand + Founder */}
           <div className="md:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
               <img
@@ -19,11 +21,28 @@ export default function Footer() {
                 <p className="text-amber-400 text-xs font-semibold tracking-widest uppercase">Premium Services</p>
               </div>
             </div>
-            <p className="text-slate-400 text-sm leading-relaxed">
+            <p className="text-slate-400 text-sm leading-relaxed mb-5">
               Your trusted platform for verified home service professionals. Quality guaranteed.
             </p>
+
+            {/* Founder */}
+            <div className="flex items-center space-x-3 bg-slate-800/60 border border-slate-700 rounded-2xl p-3">
+              <img
+                src="https://1drv.ms/i/c/250f6a28e9ace4e2/IQCQulF9oh8ZSYysgUXk9CAIAZV42NDPY2u9Pk-em-BaQ2Y?e=7CqMkU"
+                alt="Golanakonda Harish"
+                className="w-12 h-12 rounded-full object-cover border-2 border-amber-400 flex-shrink-0"
+                onError={(e) => {
+                  e.target.src = 'https://ui-avatars.com/api/?name=Golanakonda+Harish&background=f59e0b&color=fff&size=48';
+                }}
+              />
+              <div>
+                <p className="text-white font-bold text-sm">Golanakonda Harish</p>
+                <p className="text-amber-400 text-xs">Founder & CEO</p>
+              </div>
+            </div>
           </div>
 
+          {/* Quick Links */}
           <div>
             <h4 className="text-white font-bold mb-4">Quick Links</h4>
             <ul className="space-y-3 text-sm">
@@ -35,6 +54,7 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Services */}
           <div>
             <h4 className="text-white font-bold mb-4">Services</h4>
             <ul className="space-y-3 text-sm">
@@ -46,20 +66,21 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Contact */}
           <div>
             <h4 className="text-white font-bold mb-4">Contact</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center space-x-3 text-slate-400">
                 <Phone className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                <span>+91 98765 43210</span>
+                <a href="tel:+919989730775" className="hover:text-amber-400 transition-colors">+91 9989730775</a>
               </li>
               <li className="flex items-center space-x-3 text-slate-400">
                 <Mail className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                <span>support@onecallservice.com</span>
+                <a href="mailto:harishoffical855@gmail.com" className="hover:text-amber-400 transition-colors">harishoffical855@gmail.com</a>
               </li>
               <li className="flex items-start space-x-3 text-slate-400">
                 <MapPin className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-                <span>Mumbai, Maharashtra, India</span>
+                <span>Warangal, Telangana, India</span>
               </li>
             </ul>
           </div>
