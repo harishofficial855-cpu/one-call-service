@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "node -e \"try{require('fs').chmodSync('node_modules/.bin/vite','755')}catch(e){}\""
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -19,8 +20,5 @@
     "vite": "^4.3.9",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.24"
-  },
-  "allowScripts": {
-    "esbuild@0.18.20": true
   }
 }

@@ -4,8 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node ./node_modules/vite/bin/vite.js build",
-    "preview": "vite preview"
+    "build": "vite build",
+    "preview": "vite preview",
+    "postinstall": "node -e \"try{require('fs').chmodSync('node_modules/.bin/vite','755')}catch(e){}\""
   },
   "dependencies": {
     "react": "^18.2.0",
