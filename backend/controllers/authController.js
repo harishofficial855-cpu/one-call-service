@@ -17,31 +17,43 @@ const generateToken = (user) => {
 };
 
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, password, phone, role } = req.body;
+  const {
+    name, email, password, phone, role,
+    serviceCategory, serviceName, experience,
+    serviceLocation, address, servicePrice,
+    availableTime, serviceDescription,
+    profilePhoto, idProof,
+  } = req.body;
 
   if (!name || !email || !password || !phone) {
-    return res.status(400).json({
-      success: false,
-      message: 'All fields are required',
-    });
+    return res.status(400).json({ success: false, message: 'All fields are required' });
+  }
+
+  if (password !== req.body.confirmPassword) {
+    return res.status(400).json({ success: false, message: 'Passwords do not match' });
   }
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    return res.status(400).json({
-      success: false,
-      message: 'Email already registered',
+    return res.status(400).json({ success: false, message: 'Email already registered' });
+  }
+
+  const userData = {
+    name, email, password, phone,
+    role: role || 'customer',
+    profilePhoto: profilePhoto || '',
+  };
+
+  if (role === 'provider') {
+    Object.assign(userData, {
+      serviceCategory, serviceName, experience,
+      serviceLocation, servicePrice, availableTime,
+      serviceDescription, idProof,
+      address: typeof address === 'string' ? { street: address } : address,
     });
   }
 
-  const user = new User({
-    name,
-    email,
-    password,
-    phone,
-    role: role || 'customer',
-  });
-
+  const user = new User(userData);
   await user.save();
 
   const token = generateToken(user);
@@ -56,6 +68,7 @@ export const register = asyncHandler(async (req, res) => {
       email: user.email,
       phone: user.phone,
       role: user.role,
+      profilePhoto: user.profilePhoto,
     },
   });
 });

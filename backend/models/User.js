@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
     },
     profilePhoto: {
       type: String,
-      default: 'https://via.placeholder.com/150',
+      default: '',
     },
     address: {
       street: String,
@@ -40,6 +40,15 @@ const userSchema = new mongoose.Schema(
       city: String,
       pincode: String,
     },
+    // Provider-specific fields
+    serviceCategory: { type: String },
+    serviceName: { type: String },
+    experience: { type: String },
+    serviceLocation: { type: String },
+    servicePrice: { type: String },
+    availableTime: { type: String },
+    serviceDescription: { type: String },
+    idProof: { type: String },
     isActive: {
       type: Boolean,
       default: true,

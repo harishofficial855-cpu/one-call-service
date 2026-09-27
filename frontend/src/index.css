@@ -4,17 +4,13 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
-  background-color: #0a0e1a;
-  color: #e2e8f0;
+  background-color: #f0f6ff;
+  color: #1e3a5f;
 }
 
 .container-custom {
@@ -22,66 +18,50 @@ body {
 }
 
 .btn-primary {
-  @apply px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-amber-500/25 hover:-translate-y-0.5;
+  @apply px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-300 hover:-translate-y-0.5;
 }
 
 .btn-secondary {
-  @apply px-6 py-3 border border-amber-500/50 text-amber-400 rounded-xl font-semibold hover:bg-amber-500/10 transition-all;
+  @apply px-6 py-3 border-2 border-blue-500 text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-all;
 }
 
 .card-shadow {
-  @apply bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-slate-700/50 hover:border-amber-500/30 transition-all hover:shadow-xl hover:shadow-amber-500/5;
+  @apply bg-white rounded-2xl border border-blue-100 hover:border-blue-300 transition-all hover:shadow-xl hover:shadow-blue-100;
 }
 
 .input-field {
-  @apply w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all;
+  @apply w-full px-4 py-3 bg-white border-2 border-blue-100 rounded-xl text-blue-900 placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all;
 }
 
 .glass-card {
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .hero-gradient {
-  background: linear-gradient(135deg, #0a0e1a 0%, #0f172a 50%, #1a0a2e 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #3b82f6 100%);
 }
 
-.service-card:hover .service-icon {
-  transform: scale(1.1) rotate(5deg);
-  transition: transform 0.3s ease;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0f172a;
-}
-::-webkit-scrollbar-thumb {
-  background: #f59e0b;
-  border-radius: 3px;
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #eff6ff; }
+::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 3px; }
 
 @keyframes slide-up {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.animate-slide-up {
-  animation: slide-up 0.25s ease-out;
-}
+.animate-slide-up { animation: slide-up 0.25s ease-out; }
 
 @keyframes fade-in {
   from { opacity: 0; transform: scale(0.95) translateY(-4px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
-.animate-fade-in {
-  animation: fade-in 0.15s ease-out;
-}
+.animate-fade-in { animation: fade-in 0.15s ease-out; }
