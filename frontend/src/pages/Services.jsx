@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
-import { Search, Star, ArrowRight, Phone, MapPin, Clock, MessageCircle } from 'lucide-react';
+import { Search, Star, ArrowRight, Phone, MapPin, Clock, MessageCircle, Navigation } from 'lucide-react';
 import { CATEGORY_META } from './Home';
 import ServiceCardMenu from '../components/ServiceCardMenu';
 import EditServiceModal from '../components/EditServiceModal';
@@ -87,6 +87,7 @@ export default function Services() {
   const [services, setServices] = useState([]);
   const [category, setCategory] = useState('');
   const [search, setSearch] = useState('');
+  const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(true);
   const [editService, setEditService] = useState(null);
   const [toast, setToast] = useState(null);
@@ -96,11 +97,12 @@ export default function Services() {
     const params = new URLSearchParams();
     if (category) params.append('category', category);
     if (search) params.append('search', search);
+    if (location) params.append('location', location);
     api.get(`/services?${params}`)
       .then(r => setServices(r.data.services || []))
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [category, search]);
+  }, [category, search, location]);
 
   const showToast = useCallback((message, type = 'success') => setToast({ message, type }), []);
   const handleDeleted = useCallback((id, message, type = 'success') => {
@@ -120,11 +122,19 @@ export default function Services() {
         <div className="container-custom">
           <p className="text-amber-600 font-semibold text-sm uppercase tracking-widest mb-2">What We Offer</p>
           <h1 className="text-4xl font-black text-[#2c2416] mb-6">All Services</h1>
-          <div className="relative max-w-xl">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#b8a98a] w-5 h-5" />
-            <input type="text" placeholder="Search services, providers, locations..."
-              value={search} onChange={(e) => setSearch(e.target.value)}
-              className="input-field pl-12" />
+          <div className="flex flex-col sm:flex-row gap-3 max-w-2xl">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#b8a98a] w-5 h-5" />
+              <input type="text" placeholder="Search services, providers..."
+                value={search} onChange={(e) => setSearch(e.target.value)}
+                className="input-field pl-12" />
+            </div>
+            <div className="relative flex-1">
+              <Navigation className="absolute left-4 top-1/2 -translate-y-1/2 text-[#b8a98a] w-5 h-5" />
+              <input type="text" placeholder="Search by location (nearby or far)..."
+                value={location} onChange={(e) => setLocation(e.target.value)}
+                className="input-field pl-12" />
+            </div>
           </div>
         </div>
       </div>
@@ -169,7 +179,7 @@ export default function Services() {
             <p className="text-5xl mb-4">🔍</p>
             <p className="text-[#7a6a4a] text-lg mb-4">No services found</p>
             <div className="flex gap-3 justify-center">
-              <button onClick={() => { setSearch(''); setCategory(''); }} className="btn-secondary">Clear Filters</button>
+              <button onClick={() => { setSearch(''); setCategory(''); setLocation(''); }} className="btn-secondary">Clear Filters</button>
               <Link to="/register-provider" className="btn-primary">Register a Service</Link>
             </div>
           </div>

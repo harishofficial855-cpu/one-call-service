@@ -2,19 +2,28 @@ import Service, { SERVICE_CATEGORIES } from '../models/Service.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 
 export const getAllServices = asyncHandler(async (req, res) => {
-  const { category, search } = req.query;
+  const { category, search, location } = req.query;
   const filter = { isActive: true };
 
   if (category) filter.category = category;
+
+  const conditions = [];
   if (search) {
-    filter.$or = [
+    conditions.push(
       { name: { $regex: search, $options: 'i' } },
       { description: { $regex: search, $options: 'i' } },
       { category: { $regex: search, $options: 'i' } },
       { providerName: { $regex: search, $options: 'i' } },
-      { serviceLocation: { $regex: search, $options: 'i' } },
-    ];
+      { serviceLocation: { $regex: search, $options: 'i' } }
+    );
   }
+  if (location) {
+    conditions.push(
+      { serviceLocation: { $regex: location, $options: 'i' } },
+      { address: { $regex: location, $options: 'i' } }
+    );
+  }
+  if (conditions.length) filter.$or = conditions;
 
   const services = await Service.find(filter).sort({ createdAt: -1 });
   res.status(200).json({ success: true, count: services.length, services });

@@ -19,6 +19,7 @@ import NotFound from './pages/NotFound';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import AIChatbot from './components/AIChatbot';
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const user = useAuthStore((state) => state.user);
@@ -67,6 +68,7 @@ export default function App() {
           </Routes>
         </main>
         <Footer />
+        <AIChatbot />
       </div>
     </BrowserRouter>
   );

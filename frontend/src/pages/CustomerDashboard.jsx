@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuthStore } from '../store';
-import { LogOut, Edit, Bookmark } from 'lucide-react';
+import { LogOut, Edit, Bookmark, Camera } from 'lucide-react';
 
 export default function CustomerDashboard() {
   const navigate = useNavigate();
@@ -10,14 +10,14 @@ export default function CustomerDashboard() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef();
   const [formData, setFormData] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
   });
 
-  useEffect(() => {
-    fetchBookings();
-  }, []);
+  useEffect(() => { fetchBookings(); }, []);
 
   const fetchBookings = async () => {
     try {
@@ -30,10 +30,26 @@ export default function CustomerDashboard() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('image', file);
+      const { data } = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      if (data.url) {
+        updateUser({ profilePhoto: data.url });
+        await api.put('/auth/profile', { profilePhoto: data.url }).catch(() => {});
+      }
+    } catch (err) {
+      console.error('Upload failed', err);
+    } finally {
+      setUploading(false);
+    }
   };
+
+  const handleLogout = () => { logout(); navigate('/'); };
 
   return (
     <div className="container-custom py-12">
@@ -43,11 +59,19 @@ export default function CustomerDashboard() {
         {/* Profile Card */}
         <div className="lg:col-span-1">
           <div className="card-shadow p-6">
-            <img
-              src={user?.profilePhoto || 'https://via.placeholder.com/150'}
-              alt={user?.name}
-              className="w-full h-40 rounded-lg object-cover mb-4"
-            />
+            <div className="relative w-full h-40 mb-4">
+              <img
+                src={user?.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name||'User')}&background=d97706&color=fff&size=200`}
+                alt={user?.name}
+                className="w-full h-40 rounded-lg object-cover"
+              />
+              <button onClick={() => fileRef.current.click()} disabled={uploading}
+                className="absolute bottom-2 right-2 bg-amber-500 hover:bg-amber-600 text-white p-2 rounded-full shadow-lg transition"
+                title="Change photo">
+                {uploading ? <span className="text-xs px-1">...</span> : <Camera size={16} />}
+              </button>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+            </div>
             <h2 className="text-xl font-bold mb-2">{user?.name}</h2>
             <p className="text-gray-600 text-sm mb-4">{user?.email}</p>
             <p className="text-gray-600 text-sm mb-6">{user?.phone}</p>
