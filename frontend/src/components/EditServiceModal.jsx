@@ -84,10 +84,14 @@ export default function EditServiceModal({ service, onClose, onSaved }) {
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className="input-field resize-none"
-              rows={3}
-              placeholder="Service description..."
+              className="input-field"
+              rows={6}
+              maxLength={9000}
+              placeholder="Service description (up to 9000 characters)..."
             />
+            <p className={`text-xs mt-1 text-right ${form.description.length > 8500 ? 'text-red-400' : 'text-slate-500'}`}>
+              {form.description.length} / 9000
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

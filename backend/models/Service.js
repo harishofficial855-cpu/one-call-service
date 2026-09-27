@@ -20,7 +20,10 @@ const serviceSchema = new mongoose.Schema(
       ],
       required: true,
     },
-    description: String,
+    description: {
+      type: String,
+      maxlength: [9000, 'Description cannot exceed 9000 characters'],
+    },
     subservices: [String],
     basePrice: {
       type: Number,
