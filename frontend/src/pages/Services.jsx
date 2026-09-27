@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
-import { Search, Star, ArrowRight, Phone, MapPin, Clock } from 'lucide-react';
+import { Search, Star, ArrowRight, Phone, MapPin, Clock, MessageCircle } from 'lucide-react';
 import { CATEGORY_META } from './Home';
 import ServiceCardMenu from '../components/ServiceCardMenu';
 import EditServiceModal from '../components/EditServiceModal';
@@ -64,10 +64,18 @@ function ProviderCard({ service, onDeleted, onEdit }) {
           </div>
           <div className="flex gap-2">
             {service.phone && (
-              <a href={`tel:${service.phone}`}
-                className="flex items-center gap-1 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-xs font-bold transition-all">
-                <Phone size={12} /> Call
-              </a>
+              <>
+                <a href={`tel:${service.phone}`}
+                  className="flex items-center gap-1 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-xs font-bold transition-all">
+                  <Phone size={12} /> Call
+                </a>
+                <a
+                  href={`https://wa.me/91${service.phone.replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent(`Hi, I found your service "${service.name}" on One Call Service. I'd like to know more.`)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all">
+                  <MessageCircle size={12} /> WhatsApp
+                </a>
+              </>
             )}
             <Link to={`/services/${service._id}`}
               className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all">
