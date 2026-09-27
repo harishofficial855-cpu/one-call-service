@@ -37,14 +37,11 @@ export const createService = asyncHandler(async (req, res) => {
   } = req.body;
 
   // Validation
-  if (!name || !category || !basePrice) {
-    return res.status(400).json({ success: false, message: 'Name, category, and price are required' });
+  if (!name || !category) {
+    return res.status(400).json({ success: false, message: 'Name and category are required' });
   }
   if (!SERVICE_CATEGORIES.includes(category)) {
     return res.status(400).json({ success: false, message: 'Invalid service category' });
-  }
-  if (isNaN(Number(basePrice)) || Number(basePrice) < 0) {
-    return res.status(400).json({ success: false, message: 'Price must be a valid positive number' });
   }
   if (phone && !/^[6-9]\d{9}$/.test(phone.replace(/\s/g, ''))) {
     return res.status(400).json({ success: false, message: 'Enter a valid 10-digit mobile number' });
@@ -52,7 +49,7 @@ export const createService = asyncHandler(async (req, res) => {
 
   const service = await Service.create({
     name, category, description,
-    basePrice: Number(basePrice),
+    basePrice: basePrice ? Number(basePrice) : 0,
     image: image || profilePhoto || '',
     estimatedTime: estimatedTime || availableTime || '',
     providerName: providerName || '',

@@ -14,6 +14,7 @@ import offerRoutes from './routes/offerRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import complaintRoutes from './routes/complaintRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
 
 dotenv.config();
 
@@ -55,6 +56,7 @@ app.use('/api/offers', offerRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/upload', uploadRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ success: true, message: 'Server is running' });

@@ -7,39 +7,39 @@ import EditServiceModal from '../components/EditServiceModal';
 import Toast from '../components/Toast';
 
 export const CATEGORY_META = {
-  'Haircut':                    { icon: '✂️',  color: 'from-pink-500 to-rose-500' },
-  'Women Haircut':              { icon: '💇‍♀️', color: 'from-purple-500 to-pink-500' },
-  'Plumber':                    { icon: '🔧',  color: 'from-blue-500 to-cyan-500' },
-  'Electrician':                { icon: '⚡',  color: 'from-yellow-500 to-amber-500' },
-  'Water Tank Cleaning':        { icon: '💧',  color: 'from-cyan-500 to-blue-500' },
-  'House Cleaning':             { icon: '🧹',  color: 'from-green-500 to-emerald-500' },
-  'Reels / Event Video Shoot':  { icon: '🎬',  color: 'from-violet-500 to-purple-500' },
-  'Chef':                       { icon: '👨‍🍳', color: 'from-orange-500 to-red-500' },
-  'Security':                   { icon: '🛡️',  color: 'from-slate-500 to-slate-700' },
-  'Water Can':                  { icon: '🪣',  color: 'from-teal-500 to-cyan-500' },
-  'Tent Service':               { icon: '⛺',  color: 'from-amber-500 to-yellow-500' },
-  'Goat Cutter':                { icon: '🐐',  color: 'from-lime-500 to-green-500' },
-  'Chicken Cutter':             { icon: '🍗',  color: 'from-red-400 to-orange-500' },
-  'Yoga & Diet Teacher':        { icon: '🧘',  color: 'from-emerald-500 to-teal-500' },
-  'Nurse':                      { icon: '👩‍⚕️', color: 'from-blue-400 to-indigo-500' },
-  'Physiotherapy':              { icon: '💪',  color: 'from-indigo-500 to-blue-600' },
-  'Food Diet Teacher':          { icon: '🥗',  color: 'from-green-400 to-emerald-500' },
-  'Caretaker':                  { icon: '🤝',  color: 'from-rose-400 to-pink-500' },
-  'Other':                      { icon: '🛠️',  color: 'from-slate-400 to-slate-600' },
+  'Haircut':                   { icon: '✂️',  color: 'from-pink-400 to-rose-400' },
+  'Women Haircut':             { icon: '💇♀️', color: 'from-purple-400 to-pink-400' },
+  'Plumber':                   { icon: '🔧',  color: 'from-blue-400 to-cyan-400' },
+  'Electrician':               { icon: '⚡',  color: 'from-yellow-400 to-amber-400' },
+  'Water Tank Cleaning':       { icon: '💧',  color: 'from-cyan-400 to-blue-400' },
+  'House Cleaning':            { icon: '🧹',  color: 'from-green-400 to-emerald-400' },
+  'Reels / Event Video Shoot': { icon: '🎬',  color: 'from-violet-400 to-purple-400' },
+  'Chef':                      { icon: '👨🍳', color: 'from-orange-400 to-red-400' },
+  'Security':                  { icon: '🛡️',  color: 'from-slate-400 to-slate-500' },
+  'Water Can':                 { icon: '🪣',  color: 'from-teal-400 to-cyan-400' },
+  'Tent Service':              { icon: '⛺',  color: 'from-amber-400 to-yellow-400' },
+  'Goat Cutter':               { icon: '🐐',  color: 'from-lime-400 to-green-400' },
+  'Chicken Cutter':            { icon: '🍗',  color: 'from-red-400 to-orange-400' },
+  'Yoga & Diet Teacher':       { icon: '🧘',  color: 'from-emerald-400 to-teal-400' },
+  'Nurse':                     { icon: '👩⚕️', color: 'from-blue-300 to-indigo-400' },
+  'Physiotherapy':             { icon: '💪',  color: 'from-indigo-400 to-blue-500' },
+  'Food Diet Teacher':         { icon: '🥗',  color: 'from-green-300 to-emerald-400' },
+  'Caretaker':                 { icon: '🤝',  color: 'from-rose-300 to-pink-400' },
+  'Other':                     { icon: '🛠️',  color: 'from-stone-400 to-stone-500' },
 };
 
 const stats = [
   { value: '10K+', label: 'Happy Customers' },
   { value: '500+', label: 'Expert Providers' },
-  { value: '50+', label: 'Services' },
+  { value: '50+',  label: 'Services' },
   { value: '4.9★', label: 'Average Rating' },
 ];
 
 const features = [
-  { icon: Shield, title: 'Verified Experts', desc: 'All providers are background-checked and certified' },
-  { icon: Clock,  title: 'On-Time Service', desc: 'Punctual professionals who respect your time' },
-  { icon: Award,  title: 'Quality Guaranteed', desc: '100% satisfaction or we redo the service free' },
-  { icon: Users,  title: '24/7 Support', desc: 'Round-the-clock customer assistance' },
+  { icon: Shield, title: 'Verified Experts',    desc: 'All providers are background-checked and certified' },
+  { icon: Clock,  title: 'On-Time Service',     desc: 'Punctual professionals who respect your time' },
+  { icon: Award,  title: 'Quality Guaranteed',  desc: '100% satisfaction or we redo the service free' },
+  { icon: Users,  title: '24/7 Support',        desc: 'Round-the-clock customer assistance' },
 ];
 
 const SLIDES = [
@@ -79,20 +79,20 @@ function HeroSlider() {
         <video key={i} src={s.video} autoPlay muted loop playsInline
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${i === current ? 'opacity-100' : 'opacity-0'}`} />
       ))}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-black/25" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
       <div className="container-custom relative z-10 py-24">
         <div className="max-w-3xl">
           <div key={current} className="animate-fade-in">
-            <div className="inline-flex items-center space-x-2 bg-yellow-400/20 border border-yellow-400/40 rounded-full px-4 py-2 mb-6 backdrop-blur-sm">
-              <Sparkles className="w-4 h-4 text-yellow-400" />
-              <span className="text-yellow-300 text-sm font-semibold">{slide.tag}</span>
+            <div className="inline-flex items-center space-x-2 bg-amber-500/20 border border-amber-400/40 rounded-full px-4 py-2 mb-6 backdrop-blur-sm">
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span className="text-amber-200 text-sm font-semibold">{slide.tag}</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-black text-white leading-tight mb-6 drop-shadow-2xl">
               {slide.title}<br />
               <span className="gradient-text">{slide.highlight}</span>
             </h1>
-            <p className="text-xl text-slate-200 mb-10 max-w-xl leading-relaxed drop-shadow-lg">{slide.sub}</p>
+            <p className="text-xl text-stone-200 mb-10 max-w-xl leading-relaxed drop-shadow-lg">{slide.sub}</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 mb-14">
             <Link to="/services" className="btn-primary flex items-center justify-center space-x-2 text-base">
@@ -105,8 +105,8 @@ function HeroSlider() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             {stats.map((s) => (
               <div key={s.label}>
-                <p className="text-3xl font-black text-yellow-400 drop-shadow-lg">{s.value}</p>
-                <p className="text-zinc-300 text-sm mt-1">{s.label}</p>
+                <p className="text-3xl font-black text-amber-300 drop-shadow-lg">{s.value}</p>
+                <p className="text-stone-300 text-sm mt-1">{s.label}</p>
               </div>
             ))}
           </div>
@@ -115,7 +115,7 @@ function HeroSlider() {
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
         {SLIDES.map((_, i) => (
           <button key={i} onClick={() => setCurrent(i)}
-            className={`transition-all rounded-full ${i === current ? 'w-8 h-2 bg-yellow-400' : 'w-2 h-2 bg-white/40 hover:bg-white/70'}`} />
+            className={`transition-all rounded-full ${i === current ? 'w-8 h-2 bg-amber-400' : 'w-2 h-2 bg-white/40 hover:bg-white/70'}`} />
         ))}
       </div>
     </section>
@@ -124,17 +124,17 @@ function HeroSlider() {
 
 function ProviderCard({ service, onDeleted, onEdit }) {
   const cat = CATEGORY_META[service.category] || CATEGORY_META['Other'];
-  const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(service.providerName || service.name)}&background=facc15&color=000&size=128`;
+  const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(service.providerName || service.name)}&background=d97706&color=fff&size=128`;
 
   return (
     <div className="card-shadow overflow-hidden group flex flex-col">
       <div className={`h-28 bg-gradient-to-br ${cat.color} flex items-center justify-center relative`}>
-        <div className="absolute inset-0 bg-black/30" />
+        <div className="absolute inset-0 bg-white/10" />
         <span className="text-5xl relative z-10 group-hover:scale-110 transition-transform duration-300">{cat.icon}</span>
         {service.rating > 0 && (
-          <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
-            <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-            <span className="text-white text-xs font-bold">{service.rating.toFixed(1)}</span>
+          <div className="absolute top-3 left-3 bg-white/80 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
+            <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+            <span className="text-[#2c2416] text-xs font-bold">{service.rating.toFixed(1)}</span>
           </div>
         )}
         <div className="absolute top-3 right-3 z-20">
@@ -145,45 +145,40 @@ function ProviderCard({ service, onDeleted, onEdit }) {
             src={service.profilePhoto || fallbackAvatar}
             alt={service.providerName || service.name}
             onError={(e) => { e.target.src = fallbackAvatar; }}
-            className="w-16 h-16 rounded-2xl object-cover border-4 border-zinc-900 shadow-lg"
+            className="w-16 h-16 rounded-2xl object-cover border-4 border-[#fffef9] shadow-md"
           />
         </div>
       </div>
 
       <div className="pt-10 px-5 pb-5 flex flex-col flex-1">
-        <span className="text-xs font-bold text-yellow-400 uppercase tracking-wider">{service.category}</span>
-        <h3 className="text-white font-black text-lg mt-0.5 mb-1">{service.name}</h3>
+        <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">{service.category}</span>
+        <h3 className="text-[#2c2416] font-black text-lg mt-0.5 mb-1">{service.name}</h3>
         {service.providerName && (
-          <p className="text-zinc-300 text-sm font-semibold mb-2">👤 {service.providerName}</p>
+          <p className="text-[#5c4a2a] text-sm font-semibold mb-2">👤 {service.providerName}</p>
         )}
-        <p className="text-zinc-500 text-sm mb-3 line-clamp-2 flex-1">{service.description}</p>
+        <p className="text-[#7a6a4a] text-sm mb-3 line-clamp-2 flex-1">{service.description}</p>
 
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500 mb-4">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#b8a98a] mb-4">
           {service.serviceLocation && (
-            <span className="flex items-center gap-1"><MapPin size={12} className="text-yellow-400" />{service.serviceLocation}</span>
+            <span className="flex items-center gap-1"><MapPin size={12} className="text-amber-500" />{service.serviceLocation}</span>
           )}
           {service.experience && (
-            <span className="flex items-center gap-1"><Clock size={12} className="text-yellow-400" />{service.experience}</span>
+            <span className="flex items-center gap-1"><Clock size={12} className="text-amber-500" />{service.experience}</span>
           )}
           {service.availableTime && (
             <span className="flex items-center gap-1">🕐 {service.availableTime}</span>
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-2 mt-auto">
-          <div>
-            <span className="text-xl font-black text-yellow-400">₹{service.basePrice}</span>
-            <span className="text-zinc-600 text-xs ml-1">starting</span>
-          </div>
+        <div className="flex items-center justify-end gap-2 mt-auto">
           <div className="flex gap-2">
             {service.phone && (
               <>
                 <a href={`tel:${service.phone}`}
-                  className="flex items-center gap-1 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 text-green-400 px-3 py-2 rounded-lg text-xs font-bold transition-all">
+                  className="flex items-center gap-1 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-xs font-bold transition-all">
                   <Phone size={12} /> Call
                 </a>
-                <a
-                  href={`https://wa.me/91${service.phone.replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent(`Hi, I found your service "${service.name}" on One Call Service. I'd like to know more.`)}`}
+                <a href={`https://wa.me/91${service.phone.replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent(`Hi, I found your service "${service.name}" on One Call Service. I'd like to know more.`)}`}
                   target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all">
                   <MessageCircle size={12} /> WhatsApp
@@ -191,7 +186,7 @@ function ProviderCard({ service, onDeleted, onEdit }) {
               </>
             )}
             <Link to={`/services/${service._id}`}
-              className="flex items-center gap-1 bg-yellow-400 hover:bg-yellow-300 text-black px-3 py-2 rounded-lg text-xs font-black transition-all">
+              className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg text-xs font-black transition-all">
               View <ArrowRight size={12} />
             </Link>
           </div>
@@ -215,12 +210,10 @@ export default function Home() {
   }, []);
 
   const showToast = useCallback((message, type = 'success') => setToast({ message, type }), []);
-
   const handleDeleted = useCallback((id, message, type = 'success') => {
     if (id) setServices(prev => prev.filter(s => s._id !== id));
     showToast(message, type);
   }, [showToast]);
-
   const handleSaved = useCallback((updated) => {
     setServices(prev => prev.map(s => s._id === updated._id ? updated : s));
     setEditService(null);
@@ -228,30 +221,30 @@ export default function Home() {
   }, [showToast]);
 
   return (
-    <div className="w-full spots-bg">
+    <div className="w-full bg-[#faf8f3]">
       <HeroSlider />
 
       {/* How It Works */}
-      <section className="py-20 bg-black/40">
+      <section className="py-20 bg-[#f5f0e8]">
         <div className="container-custom">
           <div className="text-center mb-14">
-            <p className="text-yellow-400 font-semibold text-sm uppercase tracking-widest mb-3">Simple Process</p>
-            <h2 className="text-4xl font-black text-white">How It Works</h2>
+            <p className="text-amber-600 font-semibold text-sm uppercase tracking-widest mb-3">Simple Process</p>
+            <h2 className="text-4xl font-black text-[#2c2416]">How It Works</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[
               { n: '01', title: 'Choose Service', desc: 'Browse our wide range of professional services' },
-              { n: '02', title: 'Pick Schedule', desc: 'Select your preferred date and time slot' },
-              { n: '03', title: 'Add Details', desc: 'Provide your address and specific requirements' },
-              { n: '04', title: 'Get It Done', desc: 'Expert arrives on time and completes the job' },
+              { n: '02', title: 'Call Provider',  desc: 'Directly call or WhatsApp the service provider' },
+              { n: '03', title: 'Confirm Details', desc: 'Share your address and specific requirements' },
+              { n: '04', title: 'Get It Done',    desc: 'Expert arrives on time and completes the job' },
             ].map((step, i) => (
               <div key={i} className="relative">
                 <div className="card-shadow p-6 text-center h-full">
-                  <div className="text-5xl font-black text-yellow-400/20 mb-3">{step.n}</div>
-                  <h3 className="text-white font-bold text-lg mb-2">{step.title}</h3>
-                  <p className="text-slate-400 text-sm">{step.desc}</p>
+                  <div className="text-5xl font-black text-amber-200 mb-3">{step.n}</div>
+                  <h3 className="text-[#2c2416] font-bold text-lg mb-2">{step.title}</h3>
+                  <p className="text-[#7a6a4a] text-sm">{step.desc}</p>
                 </div>
-                {i < 3 && <ChevronRight className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 text-yellow-400/40 z-10" />}
+                {i < 3 && <ChevronRight className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 text-amber-300 z-10" />}
               </div>
             ))}
           </div>
@@ -259,14 +252,14 @@ export default function Home() {
       </section>
 
       {/* Services */}
-      <section className="py-20">
+      <section className="py-20 bg-[#faf8f3]">
         <div className="container-custom">
           <div className="flex items-end justify-between mb-14">
             <div>
-              <p className="text-yellow-400 font-semibold text-sm uppercase tracking-widest mb-3">What We Offer</p>
-              <h2 className="text-4xl font-black text-white">Our Services</h2>
+              <p className="text-amber-600 font-semibold text-sm uppercase tracking-widest mb-3">What We Offer</p>
+              <h2 className="text-4xl font-black text-[#2c2416]">Our Services</h2>
             </div>
-            <Link to="/services" className="hidden md:flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 font-semibold transition-colors">
+            <Link to="/services" className="hidden md:flex items-center space-x-2 text-amber-600 hover:text-amber-700 font-semibold transition-colors">
               <span>View All</span><ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -274,7 +267,7 @@ export default function Home() {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="card-shadow h-72 animate-pulse bg-slate-800 rounded-2xl" />
+                <div key={i} className="card-shadow h-72 animate-pulse bg-[#f0ebe0] rounded-2xl" />
               ))}
             </div>
           ) : services.length > 0 ? (
@@ -286,7 +279,7 @@ export default function Home() {
           ) : (
             <div className="text-center py-16">
               <p className="text-5xl mb-4">🛠️</p>
-              <p className="text-slate-400 text-lg mb-4">No services registered yet.</p>
+              <p className="text-[#7a6a4a] text-lg mb-4">No services registered yet.</p>
               <Link to="/register-provider" className="btn-primary inline-flex">Be the first to register!</Link>
             </div>
           )}
@@ -298,20 +291,20 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-20 bg-black/40">
+      <section className="py-20 bg-[#f5f0e8]">
         <div className="container-custom">
           <div className="text-center mb-14">
-            <p className="text-yellow-400 font-semibold text-sm uppercase tracking-widest mb-3">Why Us</p>
-            <h2 className="text-4xl font-black text-white">The One Call Difference</h2>
+            <p className="text-amber-600 font-semibold text-sm uppercase tracking-widest mb-3">Why Us</p>
+            <h2 className="text-4xl font-black text-[#2c2416]">The One Call Difference</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="card-shadow p-6 text-center group">
-                <div className="w-14 h-14 bg-yellow-400/10 border border-yellow-400/30 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-400/20 transition-all">
-                  <Icon className="w-7 h-7 text-yellow-400" />
+                <div className="w-14 h-14 bg-amber-100 border border-amber-200 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-amber-200 transition-all">
+                  <Icon className="w-7 h-7 text-amber-600" />
                 </div>
-                <h3 className="text-white font-bold mb-2">{title}</h3>
-                <p className="text-slate-400 text-sm">{desc}</p>
+                <h3 className="text-[#2c2416] font-bold mb-2">{title}</h3>
+                <p className="text-[#7a6a4a] text-sm">{desc}</p>
               </div>
             ))}
           </div>
@@ -319,19 +312,19 @@ export default function Home() {
       </section>
 
       {/* Register CTA */}
-      <section className="py-20">
+      <section className="py-20 bg-[#faf8f3]">
         <div className="container-custom">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-yellow-400 to-yellow-500 p-10 md:p-16">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-500 to-amber-600 p-10 md:p-16">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2" />
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
-                <p className="text-black/60 font-semibold mb-2">Are you a service professional?</p>
-                <h2 className="text-4xl font-black text-black mb-2">Register Your Service Today</h2>
-                <p className="text-black/70">Reach thousands of customers in your area — it's free to register.</p>
+                <p className="text-amber-100 font-semibold mb-2">Are you a service professional?</p>
+                <h2 className="text-4xl font-black text-white mb-2">Register Your Service Today</h2>
+                <p className="text-amber-100">Reach thousands of customers in your area — it's free to register.</p>
               </div>
               <Link to="/register-provider"
-                className="flex-shrink-0 bg-black text-yellow-400 font-black px-8 py-4 rounded-2xl hover:bg-zinc-900 transition-all shadow-xl text-lg whitespace-nowrap">
+                className="flex-shrink-0 bg-white text-amber-700 font-black px-8 py-4 rounded-2xl hover:bg-amber-50 transition-all shadow-xl text-lg whitespace-nowrap">
                 Register Now →
               </Link>
             </div>
