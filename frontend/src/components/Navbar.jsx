@@ -14,7 +14,7 @@ export default function Navbar() {
     user?.role === 'admin' ? '/admin/dashboard' :
     user?.role === 'provider' ? '/provider/dashboard' : '/dashboard';
 
-  const navLinks = [['/', 'Home'], ['/services', 'Services'], ['/offers', 'Offers'], ['/about', 'About'], ['/contact', 'Contact']];
+  const navLinks = [['/', 'Home'], ['/services', 'Services'], ['/offers', 'Offers'], ['/about', 'About'], ['/contact', 'Contact'], ['/register-provider', '🔧 Register Service']];
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-blue-100 shadow-md shadow-blue-50">

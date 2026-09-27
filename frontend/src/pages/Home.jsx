@@ -1,19 +1,31 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
-import { Star, ArrowRight, Shield, Clock, Award, Users, Sparkles, ChevronRight } from 'lucide-react';
+import { Star, ArrowRight, Shield, Clock, Award, Users, Sparkles, ChevronRight, Phone, MapPin } from 'lucide-react';
 import ServiceCardMenu from '../components/ServiceCardMenu';
 import EditServiceModal from '../components/EditServiceModal';
 import Toast from '../components/Toast';
 
-const categoryIcons = {
-  'Plumber': { icon: '🔧', color: 'from-blue-500 to-cyan-500' },
-  'House Cleaning': { icon: '🧹', color: 'from-green-500 to-emerald-500' },
-  'Electrical Services': { icon: '⚡', color: 'from-yellow-500 to-amber-500' },
-  'Haircut': { icon: '✂️', color: 'from-pink-500 to-rose-500' },
-  'Water Tank Cleaning': { icon: '💧', color: 'from-cyan-500 to-blue-500' },
-  'Mutton Cutter': { icon: '🥩', color: 'from-red-500 to-orange-500' },
-  "Women's Haircut": { icon: '💇‍♀️', color: 'from-purple-500 to-pink-500' },
+export const CATEGORY_META = {
+  'Haircut':                    { icon: '✂️',  color: 'from-pink-500 to-rose-500' },
+  'Women Haircut':              { icon: '💇‍♀️', color: 'from-purple-500 to-pink-500' },
+  'Plumber':                    { icon: '🔧',  color: 'from-blue-500 to-cyan-500' },
+  'Electrician':                { icon: '⚡',  color: 'from-yellow-500 to-amber-500' },
+  'Water Tank Cleaning':        { icon: '💧',  color: 'from-cyan-500 to-blue-500' },
+  'House Cleaning':             { icon: '🧹',  color: 'from-green-500 to-emerald-500' },
+  'Reels / Event Video Shoot':  { icon: '🎬',  color: 'from-violet-500 to-purple-500' },
+  'Chef':                       { icon: '👨‍🍳', color: 'from-orange-500 to-red-500' },
+  'Security':                   { icon: '🛡️',  color: 'from-slate-500 to-slate-700' },
+  'Water Can':                  { icon: '🪣',  color: 'from-teal-500 to-cyan-500' },
+  'Tent Service':               { icon: '⛺',  color: 'from-amber-500 to-yellow-500' },
+  'Goat Cutter':                { icon: '🐐',  color: 'from-lime-500 to-green-500' },
+  'Chicken Cutter':             { icon: '🍗',  color: 'from-red-400 to-orange-500' },
+  'Yoga & Diet Teacher':        { icon: '🧘',  color: 'from-emerald-500 to-teal-500' },
+  'Nurse':                      { icon: '👩‍⚕️', color: 'from-blue-400 to-indigo-500' },
+  'Physiotherapy':              { icon: '💪',  color: 'from-indigo-500 to-blue-600' },
+  'Food Diet Teacher':          { icon: '🥗',  color: 'from-green-400 to-emerald-500' },
+  'Caretaker':                  { icon: '🤝',  color: 'from-rose-400 to-pink-500' },
+  'Other':                      { icon: '🛠️',  color: 'from-slate-400 to-slate-600' },
 };
 
 const stats = [
@@ -25,9 +37,9 @@ const stats = [
 
 const features = [
   { icon: Shield, title: 'Verified Experts', desc: 'All providers are background-checked and certified' },
-  { icon: Clock, title: 'On-Time Service', desc: 'Punctual professionals who respect your time' },
-  { icon: Award, title: 'Quality Guaranteed', desc: '100% satisfaction or we redo the service free' },
-  { icon: Users, title: '24/7 Support', desc: 'Round-the-clock customer assistance' },
+  { icon: Clock,  title: 'On-Time Service', desc: 'Punctual professionals who respect your time' },
+  { icon: Award,  title: 'Quality Guaranteed', desc: '100% satisfaction or we redo the service free' },
+  { icon: Users,  title: '24/7 Support', desc: 'Round-the-clock customer assistance' },
 ];
 
 const SLIDES = [
@@ -56,111 +68,153 @@ const SLIDES = [
 
 function HeroSlider() {
   const [current, setCurrent] = useState(0);
-
   useEffect(() => {
-    const timer = setInterval(() => setCurrent(p => (p + 1) % SLIDES.length), 6000);
-    return () => clearInterval(timer);
+    const t = setInterval(() => setCurrent(p => (p + 1) % SLIDES.length), 6000);
+    return () => clearInterval(t);
   }, []);
-
   const slide = SLIDES[current];
-
   return (
     <section className="relative overflow-hidden min-h-screen flex items-center">
-      {/* Video backgrounds */}
       {SLIDES.map((s, i) => (
-        <video
-          key={i}
-          src={s.video}
-          autoPlay
-          muted
-          loop
-          playsInline
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-            i === current ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
+        <video key={i} src={s.video} autoPlay muted loop playsInline
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${i === current ? 'opacity-100' : 'opacity-0'}`} />
       ))}
-
-      {/* Dark overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
       <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
-
-      {/* Content */}
       <div className="container-custom relative z-10 py-24">
         <div className="max-w-3xl">
-          <div
-            key={current}
-            className="animate-fade-in"
-          >
-            <div className="inline-flex items-center space-x-2 bg-amber-500/20 border border-amber-500/40 rounded-full px-4 py-2 mb-6 backdrop-blur-sm">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <span className="text-amber-300 text-sm font-semibold">{slide.tag}</span>
+          <div key={current} className="animate-fade-in">
+            <div className="inline-flex items-center space-x-2 bg-blue-500/20 border border-blue-400/40 rounded-full px-4 py-2 mb-6 backdrop-blur-sm">
+              <Sparkles className="w-4 h-4 text-blue-300" />
+              <span className="text-blue-200 text-sm font-semibold">{slide.tag}</span>
             </div>
-
             <h1 className="text-5xl md:text-7xl font-black text-white leading-tight mb-6 drop-shadow-2xl">
-              {slide.title}
-              <br />
+              {slide.title}<br />
               <span className="gradient-text">{slide.highlight}</span>
             </h1>
-
-            <p className="text-xl text-slate-200 mb-10 max-w-xl leading-relaxed drop-shadow-lg">
-              {slide.sub}
-            </p>
+            <p className="text-xl text-slate-200 mb-10 max-w-xl leading-relaxed drop-shadow-lg">{slide.sub}</p>
           </div>
-
           <div className="flex flex-col sm:flex-row gap-4 mb-14">
-            <Link to="/booking" className="btn-primary flex items-center justify-center space-x-2 text-base">
-              <span>Book a Service</span>
-              <ArrowRight className="w-5 h-5" />
+            <Link to="/services" className="btn-primary flex items-center justify-center space-x-2 text-base">
+              <span>Explore Services</span><ArrowRight className="w-5 h-5" />
             </Link>
-            <Link to="/services" className="btn-secondary flex items-center justify-center space-x-2 text-base backdrop-blur-sm">
-              <span>Explore Services</span>
+            <Link to="/register-provider" className="btn-secondary flex items-center justify-center space-x-2 text-base backdrop-blur-sm">
+              <span>Register Your Service</span>
             </Link>
           </div>
-
-          {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             {stats.map((s) => (
               <div key={s.label}>
-                <p className="text-3xl font-black text-amber-400 drop-shadow-lg">{s.value}</p>
+                <p className="text-3xl font-black text-blue-300 drop-shadow-lg">{s.value}</p>
                 <p className="text-slate-300 text-sm mt-1">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
-
-      {/* Slide dots */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
         {SLIDES.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            className={`transition-all rounded-full ${
-              i === current
-                ? 'w-8 h-2 bg-amber-400'
-                : 'w-2 h-2 bg-white/40 hover:bg-white/70'
-            }`}
-          />
+          <button key={i} onClick={() => setCurrent(i)}
+            className={`transition-all rounded-full ${i === current ? 'w-8 h-2 bg-blue-400' : 'w-2 h-2 bg-white/40 hover:bg-white/70'}`} />
         ))}
       </div>
     </section>
   );
 }
 
+function ProviderCard({ service, onDeleted, onEdit }) {
+  const cat = CATEGORY_META[service.category] || CATEGORY_META['Other'];
+  const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(service.providerName || service.name)}&background=1d4ed8&color=fff&size=128`;
+
+  return (
+    <div className="card-shadow overflow-hidden group flex flex-col">
+      {/* Top banner */}
+      <div className={`h-28 bg-gradient-to-br ${cat.color} flex items-center justify-center relative`}>
+        <div className="absolute inset-0 bg-black/20" />
+        <span className="text-5xl relative z-10 group-hover:scale-110 transition-transform duration-300">{cat.icon}</span>
+        {service.rating > 0 && (
+          <div className="absolute top-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
+            <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+            <span className="text-white text-xs font-bold">{service.rating.toFixed(1)}</span>
+          </div>
+        )}
+        <div className="absolute top-3 right-3 z-20">
+          <ServiceCardMenu service={service} onDeleted={onDeleted} onEdit={onEdit} />
+        </div>
+        {/* Profile photo overlapping banner */}
+        <div className="absolute -bottom-8 left-5 z-10">
+          <img
+            src={service.profilePhoto || fallbackAvatar}
+            alt={service.providerName || service.name}
+            onError={(e) => { e.target.src = fallbackAvatar; }}
+            className="w-16 h-16 rounded-2xl object-cover border-4 border-white shadow-lg"
+          />
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="pt-10 px-5 pb-5 flex flex-col flex-1">
+        <span className="text-xs font-bold text-blue-500 uppercase tracking-wider">{service.category}</span>
+        <h3 className="text-blue-900 font-black text-lg mt-0.5 mb-1">{service.name}</h3>
+        {service.providerName && (
+          <p className="text-blue-700 text-sm font-semibold mb-2">👤 {service.providerName}</p>
+        )}
+        <p className="text-slate-500 text-sm mb-3 line-clamp-2 flex-1">{service.description}</p>
+
+        {/* Meta row */}
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 mb-4">
+          {service.serviceLocation && (
+            <span className="flex items-center gap-1"><MapPin size={12} className="text-blue-400" />{service.serviceLocation}</span>
+          )}
+          {service.experience && (
+            <span className="flex items-center gap-1"><Clock size={12} className="text-blue-400" />{service.experience}</span>
+          )}
+          {service.availableTime && (
+            <span className="flex items-center gap-1">🕐 {service.availableTime}</span>
+          )}
+        </div>
+
+        {/* Price + Actions */}
+        <div className="flex items-center justify-between gap-2 mt-auto">
+          <div>
+            <span className="text-xl font-black text-blue-700">₹{service.basePrice}</span>
+            <span className="text-slate-400 text-xs ml-1">starting</span>
+          </div>
+          <div className="flex gap-2">
+            {service.phone && (
+              <a href={`tel:${service.phone}`}
+                className="flex items-center gap-1 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-xs font-bold transition-all">
+                <Phone size={12} /> Call
+              </a>
+            )}
+            <Link to={`/services/${service._id}`}
+              className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all">
+              View <ArrowRight size={12} />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editService, setEditService] = useState(null);
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    api.get('/services').then(r => setServices(r.data.services?.slice(0, 6) || [])).catch(() => {});
+    api.get('/services')
+      .then(r => setServices(r.data.services?.slice(0, 6) || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const showToast = useCallback((message, type = 'success') => setToast({ message, type }), []);
 
-  const handleDeleted = useCallback((deletedId, message, type = 'success') => {
-    if (deletedId) setServices(prev => prev.filter(s => s._id !== deletedId));
+  const handleDeleted = useCallback((id, message, type = 'success') => {
+    if (id) setServices(prev => prev.filter(s => s._id !== id));
     showToast(message, type);
   }, [showToast]);
 
@@ -172,14 +226,13 @@ export default function Home() {
 
   return (
     <div className="w-full bg-slate-900">
-      {/* Hero — Video Background Slider */}
       <HeroSlider />
 
       {/* How It Works */}
       <section className="py-20 bg-slate-800/30">
         <div className="container-custom">
           <div className="text-center mb-14">
-            <p className="text-amber-400 font-semibold text-sm uppercase tracking-widest mb-3">Simple Process</p>
+            <p className="text-blue-400 font-semibold text-sm uppercase tracking-widest mb-3">Simple Process</p>
             <h2 className="text-4xl font-black text-white">How It Works</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -191,13 +244,11 @@ export default function Home() {
             ].map((step, i) => (
               <div key={i} className="relative">
                 <div className="card-shadow p-6 text-center h-full">
-                  <div className="text-5xl font-black text-amber-500/20 mb-3">{step.n}</div>
+                  <div className="text-5xl font-black text-blue-500/20 mb-3">{step.n}</div>
                   <h3 className="text-white font-bold text-lg mb-2">{step.title}</h3>
                   <p className="text-slate-400 text-sm">{step.desc}</p>
                 </div>
-                {i < 3 && (
-                  <ChevronRight className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 text-amber-500/40 z-10" />
-                )}
+                {i < 3 && <ChevronRight className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 text-blue-500/40 z-10" />}
               </div>
             ))}
           </div>
@@ -209,55 +260,31 @@ export default function Home() {
         <div className="container-custom">
           <div className="flex items-end justify-between mb-14">
             <div>
-              <p className="text-amber-400 font-semibold text-sm uppercase tracking-widest mb-3">What We Offer</p>
+              <p className="text-blue-400 font-semibold text-sm uppercase tracking-widest mb-3">What We Offer</p>
               <h2 className="text-4xl font-black text-white">Our Services</h2>
             </div>
-            <Link to="/services" className="hidden md:flex items-center space-x-2 text-amber-400 hover:text-amber-300 font-semibold transition-colors">
-              <span>View All</span>
-              <ArrowRight className="w-4 h-4" />
+            <Link to="/services" className="hidden md:flex items-center space-x-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors">
+              <span>View All</span><ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
-          {services.length > 0 ? (
+          {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((service) => {
-                const cat = categoryIcons[service.category] || { icon: '🛠️', color: 'from-slate-500 to-slate-600' };
-                return (
-                  <div key={service._id} className="card-shadow overflow-hidden group service-card">
-                    <div className={`h-44 bg-gradient-to-br ${cat.color} flex items-center justify-center relative overflow-hidden`}>
-                      <div className="absolute inset-0 bg-black/20" />
-                      <span className="service-icon text-6xl relative z-10 transition-transform duration-300">{cat.icon}</span>
-                      <div className="absolute top-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
-                        <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                        <span className="text-white text-xs font-bold">{service.rating || '4.8'}</span>
-                      </div>
-                      <div className="absolute top-3 right-3 z-20">
-                        <ServiceCardMenu service={service} onDeleted={handleDeleted} onEdit={setEditService} />
-                      </div>
-                    </div>
-                    <div className="p-5">
-                      <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider">{service.category}</span>
-                      <h3 className="text-white font-bold text-lg mt-1 mb-2">{service.name}</h3>
-                      <p className="text-slate-400 text-sm mb-4 line-clamp-2">{service.description}</p>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-2xl font-black text-amber-400">₹{service.basePrice}</span>
-                          <span className="text-slate-500 text-xs ml-1">starting</span>
-                        </div>
-                        <Link to={`/services/${service._id}`}
-                          className="flex items-center space-x-1 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 px-4 py-2 rounded-lg text-sm font-semibold transition-all">
-                          <span>Book Now</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="card-shadow h-72 animate-pulse bg-slate-800 rounded-2xl" />
+              ))}
+            </div>
+          ) : services.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {services.map((service) => (
+                <ProviderCard key={service._id} service={service} onDeleted={handleDeleted} onEdit={setEditService} />
+              ))}
             </div>
           ) : (
-            <div className="text-center py-16 text-slate-500">
-              <p>Loading services...</p>
+            <div className="text-center py-16">
+              <p className="text-5xl mb-4">🛠️</p>
+              <p className="text-slate-400 text-lg mb-4">No services registered yet.</p>
+              <Link to="/register-provider" className="btn-primary inline-flex">Be the first to register!</Link>
             </div>
           )}
 
@@ -271,14 +298,14 @@ export default function Home() {
       <section className="py-20 bg-slate-800/30">
         <div className="container-custom">
           <div className="text-center mb-14">
-            <p className="text-amber-400 font-semibold text-sm uppercase tracking-widest mb-3">Why Us</p>
+            <p className="text-blue-400 font-semibold text-sm uppercase tracking-widest mb-3">Why Us</p>
             <h2 className="text-4xl font-black text-white">The One Call Difference</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="card-shadow p-6 text-center group">
-                <div className="w-14 h-14 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-amber-500/20 transition-all">
-                  <Icon className="w-7 h-7 text-amber-400" />
+                <div className="w-14 h-14 bg-blue-500/10 border border-blue-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500/20 transition-all">
+                  <Icon className="w-7 h-7 text-blue-400" />
                 </div>
                 <h3 className="text-white font-bold mb-2">{title}</h3>
                 <p className="text-slate-400 text-sm">{desc}</p>
@@ -288,31 +315,29 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Offers Banner */}
+      {/* Register CTA */}
       <section className="py-20">
         <div className="container-custom">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-500 to-orange-600 p-10 md:p-16">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-blue-800 p-10 md:p-16">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2" />
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
-                <p className="text-orange-100 font-semibold mb-2">Limited Time Offer</p>
-                <h2 className="text-4xl font-black text-white mb-2">20% OFF Your First Booking</h2>
-                <p className="text-orange-100">Use code <span className="font-black bg-white/20 px-2 py-1 rounded">FIRST20</span> at checkout</p>
+                <p className="text-blue-200 font-semibold mb-2">Are you a service professional?</p>
+                <h2 className="text-4xl font-black text-white mb-2">Register Your Service Today</h2>
+                <p className="text-blue-200">Reach thousands of customers in your area — it's free to register.</p>
               </div>
-              <Link to="/booking" className="flex-shrink-0 bg-white text-orange-600 font-black px-8 py-4 rounded-2xl hover:bg-orange-50 transition-all shadow-xl text-lg">
-                Claim Offer →
+              <Link to="/register-provider"
+                className="flex-shrink-0 bg-white text-blue-700 font-black px-8 py-4 rounded-2xl hover:bg-blue-50 transition-all shadow-xl text-lg whitespace-nowrap">
+                Register Now →
               </Link>
             </div>
           </div>
         </div>
       </section>
-      {editService && (
-        <EditServiceModal service={editService} onClose={() => setEditService(null)} onSaved={handleSaved} />
-      )}
-      {toast && (
-        <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
-      )}
+
+      {editService && <EditServiceModal service={editService} onClose={() => setEditService(null)} onSaved={handleSaved} />}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 }

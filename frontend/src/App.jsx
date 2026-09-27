@@ -8,6 +8,7 @@ import Services from './pages/Services';
 import ServiceDetails from './pages/ServiceDetails';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import RegisterProvider from './pages/RegisterProvider';
 import Booking from './pages/Booking';
 import BookingConfirmation from './pages/BookingConfirmation';
 import CustomerDashboard from './pages/CustomerDashboard';
@@ -60,6 +61,7 @@ export default function App() {
               <>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/register-provider" element={<RegisterProvider />} />
               </>
             )}
 
