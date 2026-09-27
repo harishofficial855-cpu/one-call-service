@@ -52,29 +52,7 @@ export default function About() {
         </div>
       </div>
 
-      {/* Team */}
-      <div>
-        <h2 className="text-3xl font-bold mb-6">Our Team</h2>
-        <p className="text-gray-700 mb-8">
-          We're a dedicated team of professionals passionate about solving the home services problem.
-          Our team combines expertise in technology, operations, and customer service to create the best
-          experience for both customers and service providers.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[
-            { name: 'John Doe', role: 'Founder & CEO' },
-            { name: 'Jane Smith', role: 'COO' },
-            { name: 'Mike Johnson', role: 'CTO' },
-            { name: 'Sarah Wilson', role: 'Head of Customer Service' },
-          ].map((member, idx) => (
-            <div key={idx} className="card-shadow p-6 text-center">
-              <div className="w-20 h-20 bg-gray-300 rounded-full mx-auto mb-3"></div>
-              <h3 className="font-bold">{member.name}</h3>
-              <p className="text-sm text-gray-600">{member.role}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+
     </div>
   );
 }
