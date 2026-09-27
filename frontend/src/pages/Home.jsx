@@ -84,9 +84,9 @@ function HeroSlider() {
       <div className="container-custom relative z-10 py-24">
         <div className="max-w-3xl">
           <div key={current} className="animate-fade-in">
-            <div className="inline-flex items-center space-x-2 bg-blue-500/20 border border-blue-400/40 rounded-full px-4 py-2 mb-6 backdrop-blur-sm">
-              <Sparkles className="w-4 h-4 text-blue-300" />
-              <span className="text-blue-200 text-sm font-semibold">{slide.tag}</span>
+            <div className="inline-flex items-center space-x-2 bg-yellow-400/20 border border-yellow-400/40 rounded-full px-4 py-2 mb-6 backdrop-blur-sm">
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+              <span className="text-yellow-300 text-sm font-semibold">{slide.tag}</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-black text-white leading-tight mb-6 drop-shadow-2xl">
               {slide.title}<br />
@@ -105,8 +105,8 @@ function HeroSlider() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             {stats.map((s) => (
               <div key={s.label}>
-                <p className="text-3xl font-black text-blue-300 drop-shadow-lg">{s.value}</p>
-                <p className="text-slate-300 text-sm mt-1">{s.label}</p>
+                <p className="text-3xl font-black text-yellow-400 drop-shadow-lg">{s.value}</p>
+                <p className="text-zinc-300 text-sm mt-1">{s.label}</p>
               </div>
             ))}
           </div>
@@ -115,7 +115,7 @@ function HeroSlider() {
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
         {SLIDES.map((_, i) => (
           <button key={i} onClick={() => setCurrent(i)}
-            className={`transition-all rounded-full ${i === current ? 'w-8 h-2 bg-blue-400' : 'w-2 h-2 bg-white/40 hover:bg-white/70'}`} />
+            className={`transition-all rounded-full ${i === current ? 'w-8 h-2 bg-yellow-400' : 'w-2 h-2 bg-white/40 hover:bg-white/70'}`} />
         ))}
       </div>
     </section>
@@ -124,16 +124,15 @@ function HeroSlider() {
 
 function ProviderCard({ service, onDeleted, onEdit }) {
   const cat = CATEGORY_META[service.category] || CATEGORY_META['Other'];
-  const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(service.providerName || service.name)}&background=1d4ed8&color=fff&size=128`;
+  const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(service.providerName || service.name)}&background=facc15&color=000&size=128`;
 
   return (
     <div className="card-shadow overflow-hidden group flex flex-col">
-      {/* Top banner */}
       <div className={`h-28 bg-gradient-to-br ${cat.color} flex items-center justify-center relative`}>
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-black/30" />
         <span className="text-5xl relative z-10 group-hover:scale-110 transition-transform duration-300">{cat.icon}</span>
         {service.rating > 0 && (
-          <div className="absolute top-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
+          <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
             <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
             <span className="text-white text-xs font-bold">{service.rating.toFixed(1)}</span>
           </div>
@@ -141,50 +140,46 @@ function ProviderCard({ service, onDeleted, onEdit }) {
         <div className="absolute top-3 right-3 z-20">
           <ServiceCardMenu service={service} onDeleted={onDeleted} onEdit={onEdit} />
         </div>
-        {/* Profile photo overlapping banner */}
         <div className="absolute -bottom-8 left-5 z-10">
           <img
             src={service.profilePhoto || fallbackAvatar}
             alt={service.providerName || service.name}
             onError={(e) => { e.target.src = fallbackAvatar; }}
-            className="w-16 h-16 rounded-2xl object-cover border-4 border-white shadow-lg"
+            className="w-16 h-16 rounded-2xl object-cover border-4 border-zinc-900 shadow-lg"
           />
         </div>
       </div>
 
-      {/* Body */}
       <div className="pt-10 px-5 pb-5 flex flex-col flex-1">
-        <span className="text-xs font-bold text-blue-500 uppercase tracking-wider">{service.category}</span>
-        <h3 className="text-blue-900 font-black text-lg mt-0.5 mb-1">{service.name}</h3>
+        <span className="text-xs font-bold text-yellow-400 uppercase tracking-wider">{service.category}</span>
+        <h3 className="text-white font-black text-lg mt-0.5 mb-1">{service.name}</h3>
         {service.providerName && (
-          <p className="text-blue-700 text-sm font-semibold mb-2">👤 {service.providerName}</p>
+          <p className="text-zinc-300 text-sm font-semibold mb-2">👤 {service.providerName}</p>
         )}
-        <p className="text-slate-500 text-sm mb-3 line-clamp-2 flex-1">{service.description}</p>
+        <p className="text-zinc-500 text-sm mb-3 line-clamp-2 flex-1">{service.description}</p>
 
-        {/* Meta row */}
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 mb-4">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500 mb-4">
           {service.serviceLocation && (
-            <span className="flex items-center gap-1"><MapPin size={12} className="text-blue-400" />{service.serviceLocation}</span>
+            <span className="flex items-center gap-1"><MapPin size={12} className="text-yellow-400" />{service.serviceLocation}</span>
           )}
           {service.experience && (
-            <span className="flex items-center gap-1"><Clock size={12} className="text-blue-400" />{service.experience}</span>
+            <span className="flex items-center gap-1"><Clock size={12} className="text-yellow-400" />{service.experience}</span>
           )}
           {service.availableTime && (
             <span className="flex items-center gap-1">🕐 {service.availableTime}</span>
           )}
         </div>
 
-        {/* Price + Actions */}
         <div className="flex items-center justify-between gap-2 mt-auto">
           <div>
-            <span className="text-xl font-black text-blue-700">₹{service.basePrice}</span>
-            <span className="text-slate-400 text-xs ml-1">starting</span>
+            <span className="text-xl font-black text-yellow-400">₹{service.basePrice}</span>
+            <span className="text-zinc-600 text-xs ml-1">starting</span>
           </div>
           <div className="flex gap-2">
             {service.phone && (
               <>
                 <a href={`tel:${service.phone}`}
-                  className="flex items-center gap-1 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-xs font-bold transition-all">
+                  className="flex items-center gap-1 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 text-green-400 px-3 py-2 rounded-lg text-xs font-bold transition-all">
                   <Phone size={12} /> Call
                 </a>
                 <a
@@ -196,7 +191,7 @@ function ProviderCard({ service, onDeleted, onEdit }) {
               </>
             )}
             <Link to={`/services/${service._id}`}
-              className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all">
+              className="flex items-center gap-1 bg-yellow-400 hover:bg-yellow-300 text-black px-3 py-2 rounded-lg text-xs font-black transition-all">
               View <ArrowRight size={12} />
             </Link>
           </div>
@@ -233,14 +228,14 @@ export default function Home() {
   }, [showToast]);
 
   return (
-    <div className="w-full bg-slate-900">
+    <div className="w-full spots-bg">
       <HeroSlider />
 
       {/* How It Works */}
-      <section className="py-20 bg-slate-800/30">
+      <section className="py-20 bg-black/40">
         <div className="container-custom">
           <div className="text-center mb-14">
-            <p className="text-blue-400 font-semibold text-sm uppercase tracking-widest mb-3">Simple Process</p>
+            <p className="text-yellow-400 font-semibold text-sm uppercase tracking-widest mb-3">Simple Process</p>
             <h2 className="text-4xl font-black text-white">How It Works</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -252,11 +247,11 @@ export default function Home() {
             ].map((step, i) => (
               <div key={i} className="relative">
                 <div className="card-shadow p-6 text-center h-full">
-                  <div className="text-5xl font-black text-blue-500/20 mb-3">{step.n}</div>
+                  <div className="text-5xl font-black text-yellow-400/20 mb-3">{step.n}</div>
                   <h3 className="text-white font-bold text-lg mb-2">{step.title}</h3>
                   <p className="text-slate-400 text-sm">{step.desc}</p>
                 </div>
-                {i < 3 && <ChevronRight className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 text-blue-500/40 z-10" />}
+                {i < 3 && <ChevronRight className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 text-yellow-400/40 z-10" />}
               </div>
             ))}
           </div>
@@ -268,10 +263,10 @@ export default function Home() {
         <div className="container-custom">
           <div className="flex items-end justify-between mb-14">
             <div>
-              <p className="text-blue-400 font-semibold text-sm uppercase tracking-widest mb-3">What We Offer</p>
+              <p className="text-yellow-400 font-semibold text-sm uppercase tracking-widest mb-3">What We Offer</p>
               <h2 className="text-4xl font-black text-white">Our Services</h2>
             </div>
-            <Link to="/services" className="hidden md:flex items-center space-x-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors">
+            <Link to="/services" className="hidden md:flex items-center space-x-2 text-yellow-400 hover:text-yellow-300 font-semibold transition-colors">
               <span>View All</span><ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -303,17 +298,17 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-20 bg-slate-800/30">
+      <section className="py-20 bg-black/40">
         <div className="container-custom">
           <div className="text-center mb-14">
-            <p className="text-blue-400 font-semibold text-sm uppercase tracking-widest mb-3">Why Us</p>
+            <p className="text-yellow-400 font-semibold text-sm uppercase tracking-widest mb-3">Why Us</p>
             <h2 className="text-4xl font-black text-white">The One Call Difference</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="card-shadow p-6 text-center group">
-                <div className="w-14 h-14 bg-blue-500/10 border border-blue-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500/20 transition-all">
-                  <Icon className="w-7 h-7 text-blue-400" />
+                <div className="w-14 h-14 bg-yellow-400/10 border border-yellow-400/30 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-400/20 transition-all">
+                  <Icon className="w-7 h-7 text-yellow-400" />
                 </div>
                 <h3 className="text-white font-bold mb-2">{title}</h3>
                 <p className="text-slate-400 text-sm">{desc}</p>
@@ -326,17 +321,17 @@ export default function Home() {
       {/* Register CTA */}
       <section className="py-20">
         <div className="container-custom">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-blue-800 p-10 md:p-16">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-yellow-400 to-yellow-500 p-10 md:p-16">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2" />
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
-                <p className="text-blue-200 font-semibold mb-2">Are you a service professional?</p>
-                <h2 className="text-4xl font-black text-white mb-2">Register Your Service Today</h2>
-                <p className="text-blue-200">Reach thousands of customers in your area — it's free to register.</p>
+                <p className="text-black/60 font-semibold mb-2">Are you a service professional?</p>
+                <h2 className="text-4xl font-black text-black mb-2">Register Your Service Today</h2>
+                <p className="text-black/70">Reach thousands of customers in your area — it's free to register.</p>
               </div>
               <Link to="/register-provider"
-                className="flex-shrink-0 bg-white text-blue-700 font-black px-8 py-4 rounded-2xl hover:bg-blue-50 transition-all shadow-xl text-lg whitespace-nowrap">
+                className="flex-shrink-0 bg-black text-yellow-400 font-black px-8 py-4 rounded-2xl hover:bg-zinc-900 transition-all shadow-xl text-lg whitespace-nowrap">
                 Register Now →
               </Link>
             </div>

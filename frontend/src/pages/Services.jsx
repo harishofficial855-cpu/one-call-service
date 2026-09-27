@@ -11,15 +11,15 @@ const ALL_CATEGORIES = Object.keys(CATEGORY_META);
 
 function ProviderCard({ service, onDeleted, onEdit }) {
   const cat = CATEGORY_META[service.category] || CATEGORY_META['Other'];
-  const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(service.providerName || service.name)}&background=1d4ed8&color=fff&size=128`;
+  const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(service.providerName || service.name)}&background=facc15&color=000&size=128`;
 
   return (
     <div className="card-shadow overflow-hidden group flex flex-col">
       <div className={`h-28 bg-gradient-to-br ${cat.color} flex items-center justify-center relative`}>
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-black/30" />
         <span className="text-5xl relative z-10 group-hover:scale-110 transition-transform duration-300">{cat.icon}</span>
         {service.rating > 0 && (
-          <div className="absolute top-3 left-3 bg-black/30 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
+          <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
             <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
             <span className="text-white text-xs font-bold">{service.rating.toFixed(1)}</span>
           </div>
@@ -32,25 +32,25 @@ function ProviderCard({ service, onDeleted, onEdit }) {
             src={service.profilePhoto || fallbackAvatar}
             alt={service.providerName || service.name}
             onError={(e) => { e.target.src = fallbackAvatar; }}
-            className="w-16 h-16 rounded-2xl object-cover border-4 border-white shadow-lg"
+            className="w-16 h-16 rounded-2xl object-cover border-4 border-zinc-900 shadow-lg"
           />
         </div>
       </div>
 
       <div className="pt-10 px-5 pb-5 flex flex-col flex-1">
-        <span className="text-xs font-bold text-blue-500 uppercase tracking-wider">{service.category}</span>
-        <h3 className="text-blue-900 font-black text-lg mt-0.5 mb-1">{service.name}</h3>
+        <span className="text-xs font-bold text-yellow-400 uppercase tracking-wider">{service.category}</span>
+        <h3 className="text-white font-black text-lg mt-0.5 mb-1">{service.name}</h3>
         {service.providerName && (
-          <p className="text-blue-700 text-sm font-semibold mb-2">👤 {service.providerName}</p>
+          <p className="text-zinc-300 text-sm font-semibold mb-2">👤 {service.providerName}</p>
         )}
-        <p className="text-slate-500 text-sm mb-3 line-clamp-2 flex-1">{service.description}</p>
+        <p className="text-zinc-500 text-sm mb-3 line-clamp-2 flex-1">{service.description}</p>
 
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 mb-4">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500 mb-4">
           {service.serviceLocation && (
-            <span className="flex items-center gap-1"><MapPin size={12} className="text-blue-400" />{service.serviceLocation}</span>
+            <span className="flex items-center gap-1"><MapPin size={12} className="text-yellow-400" />{service.serviceLocation}</span>
           )}
           {service.experience && (
-            <span className="flex items-center gap-1"><Clock size={12} className="text-blue-400" />{service.experience}</span>
+            <span className="flex items-center gap-1"><Clock size={12} className="text-yellow-400" />{service.experience}</span>
           )}
           {service.availableTime && (
             <span className="flex items-center gap-1">🕐 {service.availableTime}</span>
@@ -59,14 +59,14 @@ function ProviderCard({ service, onDeleted, onEdit }) {
 
         <div className="flex items-center justify-between gap-2 mt-auto">
           <div>
-            <span className="text-xl font-black text-blue-700">₹{service.basePrice}</span>
-            <span className="text-slate-400 text-xs ml-1">starting</span>
+            <span className="text-xl font-black text-yellow-400">₹{service.basePrice}</span>
+            <span className="text-zinc-600 text-xs ml-1">starting</span>
           </div>
           <div className="flex gap-2">
             {service.phone && (
               <>
                 <a href={`tel:${service.phone}`}
-                  className="flex items-center gap-1 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-xs font-bold transition-all">
+                  className="flex items-center gap-1 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 text-green-400 px-3 py-2 rounded-lg text-xs font-bold transition-all">
                   <Phone size={12} /> Call
                 </a>
                 <a
@@ -78,7 +78,7 @@ function ProviderCard({ service, onDeleted, onEdit }) {
               </>
             )}
             <Link to={`/services/${service._id}`}
-              className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all">
+              className="flex items-center gap-1 bg-yellow-400 hover:bg-yellow-300 text-black px-3 py-2 rounded-lg text-xs font-black transition-all">
               View <ArrowRight size={12} />
             </Link>
           </div>
@@ -121,11 +121,11 @@ export default function Services() {
   }, [showToast]);
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen spots-bg">
       {/* Header */}
-      <div className="bg-slate-800/50 border-b border-slate-700/50 py-12">
+      <div className="bg-black/60 border-b border-yellow-400/20 py-12">
         <div className="container-custom">
-          <p className="text-blue-400 font-semibold text-sm uppercase tracking-widest mb-2">What We Offer</p>
+          <p className="text-yellow-400 font-semibold text-sm uppercase tracking-widest mb-2">What We Offer</p>
           <h1 className="text-4xl font-black text-white mb-6">All Services</h1>
           <div className="relative max-w-xl">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
@@ -141,14 +141,14 @@ export default function Services() {
         <div className="flex flex-wrap gap-2 mb-10">
           <button onClick={() => setCategory('')}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-              !category ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-blue-500/50 hover:text-blue-400'
+              !category ? 'bg-yellow-400 text-black shadow-lg shadow-yellow-400/20' : 'bg-zinc-900 text-zinc-400 border border-zinc-700 hover:border-yellow-400/50 hover:text-yellow-400'
             }`}>
             All
           </button>
           {ALL_CATEGORIES.map((cat) => (
             <button key={cat} onClick={() => setCategory(cat)}
               className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                category === cat ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-blue-500/50 hover:text-blue-400'
+                category === cat ? 'bg-yellow-400 text-black shadow-lg shadow-yellow-400/20' : 'bg-zinc-900 text-zinc-400 border border-zinc-700 hover:border-yellow-400/50 hover:text-yellow-400'
               }`}>
               {CATEGORY_META[cat]?.icon} {cat}
             </button>
@@ -159,7 +159,7 @@ export default function Services() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="card-shadow h-72 animate-pulse bg-slate-800 rounded-2xl" />
+              <div key={i} className="card-shadow h-72 animate-pulse bg-zinc-800 rounded-2xl" />
             ))}
           </div>
         ) : services.length > 0 ? (
