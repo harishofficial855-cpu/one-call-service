@@ -13,6 +13,8 @@ const providerSchema = new mongoose.Schema(
         'Plumber',
         'House Cleaning',
         'Water Tank Cleaning',
+        'Painting Service',
+        'Electronics Repair Service',
         'Electrical Services',
         'Haircut',
         'Mutton Cutter',

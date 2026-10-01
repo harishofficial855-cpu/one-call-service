@@ -5,12 +5,10 @@ import { useAuthStore } from '../store';
 import { User, Mail, Phone, Lock, Briefcase, MapPin, Clock, DollarSign, FileText, Image, ChevronDown } from 'lucide-react';
 
 const SERVICE_CATEGORIES = [
-  'Haircut', 'Women Haircut', 'Plumber', 'Electrician', 'Chef',
-  'Nurse', 'Water Tank Service', 'Event Shot Service', 'Political Shot Service',
-  'Personal Cam Shot Service', 'Security Service', 'Tent Service',
-  'Goat Cutter', 'Chicken Cutter Service', 'Yoga & Diet Teacher',
-  'Home Tuitions', 'Physiotherapy Service', 'Food Diet Teacher',
-  'Other',
+  'Haircut', 'Women Haircut', 'Plumber', 'Electrician', 'Painting Service', 'Electronics Repair Service', 'Chef',
+  'Nurse', 'Water Tank Cleaning', 'Reels / Event Video Shoot', 'Security', 'Tent Service',
+  'Goat Cutter', 'Chicken Cutter', 'Yoga & Diet Teacher',
+  'Physiotherapy', 'Food Diet Teacher', 'Caretaker', 'Other',
 ];
 
 const INITIAL = {

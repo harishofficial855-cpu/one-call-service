@@ -13,6 +13,8 @@ export const CATEGORY_META = {
   'Electrician':               { icon: '⚡',  color: 'from-yellow-400 to-amber-400' },
   'Water Tank Cleaning':       { icon: '💧',  color: 'from-cyan-400 to-blue-400' },
   'House Cleaning':            { icon: '🧹',  color: 'from-green-400 to-emerald-400' },
+  'Painting Service':          { icon: '🎨',  color: 'from-amber-400 to-orange-400' },
+  'Electronics Repair Service':{ icon: '🔌',  color: 'from-violet-400 to-indigo-400' },
   'Reels / Event Video Shoot': { icon: '🎬',  color: 'from-violet-400 to-purple-400' },
   'Chef':                      { icon: '👨🍳', color: 'from-orange-400 to-red-400' },
   'Security':                  { icon: '🛡️',  color: 'from-slate-400 to-slate-500' },

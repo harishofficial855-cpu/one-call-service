@@ -9,16 +9,16 @@ import {
 
 const SERVICE_CATEGORIES = [
   'Haircut','Women Haircut','Plumber','Electrician',
-  'Water Tank Cleaning','House Cleaning','Reels / Event Video Shoot',
-  'Chef','Security','Water Can','Tent Service',
+  'Water Tank Cleaning','House Cleaning','Painting Service','Electronics Repair Service',
+  'Reels / Event Video Shoot','Chef','Security','Water Can','Tent Service',
   'Goat Cutter','Chicken Cutter','Yoga & Diet Teacher',
   'Nurse','Physiotherapy','Food Diet Teacher','Caretaker','Other',
 ];
 
 const CATEGORY_ICONS = {
   'Haircut':'✂️','Women Haircut':'💇♀️','Plumber':'🔧','Electrician':'⚡',
-  'Water Tank Cleaning':'💧','House Cleaning':'🧹','Reels / Event Video Shoot':'🎬',
-  'Chef':'👨‍🍳','Security':'🛡️','Water Can':'🪣','Tent Service':'⛺',
+  'Water Tank Cleaning':'💧','House Cleaning':'🧹','Painting Service':'🎨','Electronics Repair Service':'🔌',
+  'Reels / Event Video Shoot':'🎬','Chef':'👨‍🍳','Security':'🛡️','Water Can':'🪣','Tent Service':'⛺',
   'Goat Cutter':'🐐','Chicken Cutter':'🍗','Yoga & Diet Teacher':'🧘',
   'Nurse':'👩‍⚕️','Physiotherapy':'💪','Food Diet Teacher':'🥗',
   'Caretaker':'🤝','Other':'🛠️',
