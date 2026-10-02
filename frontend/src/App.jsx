@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { useAuthStore } from './store';
 
 import Home from './pages/Home';
@@ -69,6 +70,7 @@ export default function App() {
         </main>
         <Footer />
         <AIChatbot />
+        <Analytics />
       </div>
     </BrowserRouter>
   );
