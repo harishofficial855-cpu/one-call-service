@@ -1,3 +1,4 @@
+import dns from 'node:dns';
 import mongoose from 'mongoose';
 
 let cached = global.mongoose || { conn: null, promise: null };
@@ -7,6 +8,12 @@ const connectDB = async () => {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
+    const dnsServers = process.env.MONGODB_DNS_SERVERS
+      ?.split(',')
+      .map((server) => server.trim())
+      .filter(Boolean);
+    if (dnsServers?.length) dns.setServers(dnsServers);
+
     cached.promise = mongoose.connect(process.env.MONGODB_URI).then((m) => {
       console.log(`✓ MongoDB connected successfully`);
       console.log(`Database: ${m.connection.name}`);

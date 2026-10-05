@@ -85,6 +85,11 @@ JWT_SECRET=your_jwt_secret_key_here
 FRONTEND_URL=http://localhost:5173
 ```
 
+If MongoDB Atlas SRV lookups fail with `ECONNREFUSED`, you can set
+`MONGODB_DNS_SERVERS=8.8.8.8,8.8.4.4` to use explicit DNS resolvers. Only set
+this when your system's configured DNS resolver cannot resolve the Atlas SRV
+record.
+
 #### Initialize Database
 ```bash
 # Seed sample data
