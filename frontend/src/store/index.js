@@ -1,24 +1,52 @@
 import { create } from 'zustand';
 
+const storage = {
+  getItem(key) {
+    if (typeof window === 'undefined' || !window.localStorage) return null;
+    return window.localStorage.getItem(key);
+  },
+  setItem(key, value) {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    window.localStorage.setItem(key, value);
+  },
+  removeItem(key) {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    window.localStorage.removeItem(key);
+  },
+};
+
+const readStoredUser = () => {
+  const storedUser = storage.getItem('user');
+  if (!storedUser) return null;
+
+  try {
+    return JSON.parse(storedUser);
+  } catch {
+    storage.removeItem('user');
+    return null;
+  }
+};
+
 export const useAuthStore = create((set) => ({
-  user: JSON.parse(localStorage.getItem('user')) || null,
-  token: localStorage.getItem('token') || null,
+  user: readStoredUser(),
+  token: storage.getItem('token') || null,
 
   login: (user, token) => {
-    localStorage.setItem('user', JSON.stringify(user));
-    localStorage.setItem('token', token);
+    storage.setItem('user', JSON.stringify(user));
+    storage.setItem('token', token);
     set({ user, token });
   },
 
   logout: () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    storage.removeItem('user');
+    storage.removeItem('token');
     set({ user: null, token: null });
   },
 
   updateUser: (userData) => {
-    const updatedUser = { ...JSON.parse(localStorage.getItem('user')), ...userData };
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+    const currentUser = readStoredUser() || {};
+    const updatedUser = { ...currentUser, ...userData };
+    storage.setItem('user', JSON.stringify(updatedUser));
     set({ user: updatedUser });
   },
 }));
