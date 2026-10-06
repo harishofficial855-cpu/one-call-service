@@ -70,10 +70,13 @@ const SLIDES = [
 
 function HeroSlider() {
   const [current, setCurrent] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   useEffect(() => {
+    if (isPaused) return undefined;
+
     const t = setInterval(() => setCurrent(p => (p + 1) % SLIDES.length), 6000);
     return () => clearInterval(t);
-  }, []);
+  }, [isPaused]);
   const slide = SLIDES[current];
   return (
     <section className="relative overflow-hidden min-h-screen flex items-center">
@@ -114,11 +117,30 @@ function HeroSlider() {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
-        {SLIDES.map((_, i) => (
-          <button key={i} onClick={() => setCurrent(i)}
-            className={`transition-all rounded-full ${i === current ? 'w-8 h-2 bg-amber-400' : 'w-2 h-2 bg-white/40 hover:bg-white/70'}`} />
-        ))}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10">
+        <div className="flex items-center space-x-2">
+          {SLIDES.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setCurrent(i)}
+              aria-label={`Show slide ${i + 1}: ${SLIDES[i].tag}`}
+              aria-current={i === current ? 'true' : undefined}
+              className={`transition-all rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2 focus:ring-offset-[#1c1408] ${i === current
+                  ? 'w-8 h-2 bg-amber-400'
+                  : 'w-2 h-2 bg-white/40 hover:bg-white/70'
+                }`}
+            />
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsPaused((paused) => !paused)}
+          aria-label={isPaused ? 'Resume automatic slide rotation' : 'Pause automatic slide rotation'}
+          className="text-xs font-semibold text-white/80 hover:text-white focus:outline-none focus:ring-2 focus:ring-amber-300 rounded"
+        >
+          {isPaused ? 'Resume slides' : 'Pause slides'}
+        </button>
       </div>
     </section>
   );
