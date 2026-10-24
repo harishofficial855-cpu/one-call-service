@@ -29,6 +29,10 @@ export const register = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'All fields are required' });
   }
 
+  if (role && !['customer', 'provider'].includes(role)) {
+    return res.status(400).json({ success: false, message: 'Invalid account role' });
+  }
+
   if (password !== req.body.confirmPassword) {
     return res.status(400).json({ success: false, message: 'Passwords do not match' });
   }

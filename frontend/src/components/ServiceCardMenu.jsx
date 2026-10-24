@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MoreVertical, Pencil, Eye, Trash2, Phone, MessageCircle, Loader2 } from 'lucide-react';
 import api from '../services/api';
 import { useAuthStore } from '../store';
+import { trackProviderClick } from '../services/tracking';
 
 export default function ServiceCardMenu({ service, onDeleted, onEdit }) {
   const [open, setOpen] = useState(false);
@@ -58,7 +59,7 @@ export default function ServiceCardMenu({ service, onDeleted, onEdit }) {
           </button>
 
           {providerPhone && (
-            <a href={`tel:${providerPhone}`} onClick={() => setOpen(false)} className={menuItemCls}>
+            <a href={`tel:${providerPhone}`} onClick={() => { trackProviderClick(service._id, 'call'); setOpen(false); }} className={menuItemCls}>
               <Phone className="w-4 h-4 text-green-500" />
               <span>Call Provider</span>
             </a>
@@ -66,7 +67,7 @@ export default function ServiceCardMenu({ service, onDeleted, onEdit }) {
 
           {providerPhone && (
             <a href={`https://wa.me/91${providerPhone}?text=${waMsg}`}
-              target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className={menuItemCls}>
+              target="_blank" rel="noopener noreferrer" onClick={() => { trackProviderClick(service._id, 'whatsapp'); setOpen(false); }} className={menuItemCls}>
               <MessageCircle className="w-4 h-4 text-emerald-500" />
               <span>WhatsApp</span>
             </a>

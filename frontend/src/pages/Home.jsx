@@ -5,6 +5,7 @@ import { Star, ArrowRight, Shield, Clock, Award, Users, Sparkles, ChevronRight, 
 import ServiceCardMenu from '../components/ServiceCardMenu';
 import EditServiceModal from '../components/EditServiceModal';
 import Toast from '../components/Toast';
+import { trackProviderClick } from '../services/tracking';
 
 export const CATEGORY_META = {
   'Haircut':                   { icon: '✂️',  color: 'from-pink-400 to-rose-400' },
@@ -198,11 +199,12 @@ function ProviderCard({ service, onDeleted, onEdit }) {
           <div className="flex gap-2">
             {service.phone && (
               <>
-                <a href={`tel:${service.phone}`}
+                <a href={`tel:${service.phone}`} onClick={() => trackProviderClick(service._id, 'call')}
                   className="flex items-center gap-1 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-xs font-bold transition-all">
                   <Phone size={12} /> Call
                 </a>
                 <a href={`https://wa.me/91${service.phone.replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent(`Hi, I found your service "${service.name}" on One Call Service. I'd like to know more.`)}`}
+                  onClick={() => trackProviderClick(service._id, 'whatsapp')}
                   target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all">
                   <MessageCircle size={12} /> WhatsApp

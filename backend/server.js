@@ -15,10 +15,12 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import complaintRoutes from './routes/complaintRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import trackingRoutes from './routes/trackingRoutes.js';
 
 dotenv.config();
 
 const app = express();
+app.set('trust proxy', 1);
 
 // CORS — set headers before anything else
 app.use((req, res, next) => {
@@ -56,6 +58,7 @@ app.use('/api/offers', offerRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/tracking', trackingRoutes);
 app.use('/api/upload', uploadRoutes);
 
 app.get('/api/health', (req, res) => {

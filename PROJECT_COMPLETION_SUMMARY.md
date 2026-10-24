@@ -226,11 +226,9 @@ npm run dev
 
 ## 👥 Test Accounts
 
-### Admin Account (Use for Admin Dashboard)
-```
-Email: admin@onecallservice.com
-Password: Admin123
-```
+### Admin Account
+Configure `ADMIN_EMAIL` and a bcrypt `ADMIN_PASSWORD_HASH` in the backend
+environment, then sign in at `/admin`.
 
 ### Create Test Customer/Provider
 - Go to http://localhost:5173/register

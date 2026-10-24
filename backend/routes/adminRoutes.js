@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  loginAdmin,
   getDashboardStats,
   getAllCustomers,
   getCustomerById,
@@ -9,10 +10,14 @@ import {
   deleteUser,
 } from '../controllers/adminController.js';
 import { authMiddleware, roleMiddleware } from '../middleware/auth.js';
+import { adminLoginRateLimit } from '../middleware/adminLoginRateLimit.js';
+import { getAnalyticsReport } from '../controllers/trackingController.js';
 
 const router = express.Router();
 
+router.post('/login', adminLoginRateLimit, loginAdmin);
 router.get('/stats', authMiddleware, roleMiddleware('admin'), getDashboardStats);
+router.get('/analytics', authMiddleware, roleMiddleware('admin'), getAnalyticsReport);
 router.get('/customers', authMiddleware, roleMiddleware('admin'), getAllCustomers);
 router.get('/customers/:id', authMiddleware, roleMiddleware('admin'), getCustomerById);
 router.get('/providers', authMiddleware, roleMiddleware('admin'), getAllProviders);

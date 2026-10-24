@@ -16,12 +16,9 @@ Both servers are now running and the database is seeded with sample data.
 
 ### 1️⃣ Test Customer Flow
 
-#### Login as Admin First (to verify setup)
-```
-Email: admin@onecallservice.com
-Password: Admin123
-Role: Admin
-```
+#### Configure and sign in as Admin
+Set `ADMIN_EMAIL` and `ADMIN_PASSWORD_HASH` in the backend environment, then
+visit http://localhost:5173/admin and sign in with that email and password.
 
 #### Create a Test Customer Account
 1. Go to http://localhost:5173/register
@@ -108,15 +105,11 @@ Role: Admin
 ### 3️⃣ Test Admin Flow
 
 #### Login as Admin
-1. Go to http://localhost:5173/login
-2. Use credentials:
-   ```
-   Email: admin@onecallservice.com
-   Password: Admin123
-   ```
+1. Configure `ADMIN_EMAIL` and `ADMIN_PASSWORD_HASH` in the backend environment.
+2. Go to http://localhost:5173/admin and use the configured email and password.
 
 #### Access Admin Dashboard
-1. Navigate to http://localhost:5173/admin/dashboard
+1. After signing in, the dashboard opens at http://localhost:5173/admin
 2. View dashboard stats:
    - Total Customers
    - Total Providers
@@ -199,13 +192,13 @@ curl -X POST http://localhost:5000/api/auth/register \
   }'
 ```
 
-### Login
+### Admin login
 ```bash
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST http://localhost:5000/api/admin/login \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "admin@onecallservice.com",
-    "password": "Admin123"
+    "email": "your-admin-email",
+    "password": "your-admin-password"
   }'
 ```
 
@@ -342,11 +335,11 @@ View and manage MongoDB data:
 
 ---
 
-## 📝 Sample Test Credentials
+## 📝 Test Accounts
 
 | Role | Email | Password |
 |------|-------|----------|
-| Admin | admin@onecallservice.com | Admin123 |
+| Admin | Set `ADMIN_EMAIL` in backend | Use the password used to generate `ADMIN_PASSWORD_HASH` |
 | Customer | *Register new* | Create your own |
 | Provider | *Register new* | Create your own |
 

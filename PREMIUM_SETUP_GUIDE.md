@@ -17,29 +17,26 @@
 
 ## 📋 MONGODB ATLAS SETUP (CRITICAL)
 
-Your connection string is configured:
-```
-mongodb+srv://AKHI:AKHI213@cluster0.i0l1iyu.mongodb.net/one%20call%20service
-```
+Keep the MongoDB connection string only in the backend environment, never in this guide or source control.
 
 ### Step 1: Go to MongoDB Atlas
 1. Visit: https://cloud.mongodb.com
-2. Login with your AKHI account
+2. Sign in to your own MongoDB Atlas account
 3. Click on **"Cluster0"**
 
 ### Step 2: Configure Network Access
 1. Go to **"Security"** → **"Network Access"**
-2. Look for your IP rule (0.0.0.0/0)
-3. If it shows **"ACTIVE"** ✅ - It's working, proceed to Step 3
-4. If it shows **"PENDING"** ⏳ - Wait 5-10 minutes for activation
-5. If it doesn't exist ❌ - Click **"+ ADD IP ADDRESS"**
-   - Select: **"Add Current IP Address"** OR **"Allow Access from Anywhere"** (0.0.0.0/0)
-   - Click **"CONFIRM"**
+2. If your trusted deployment address shows **"ACTIVE"** ✅, proceed to Step 3
+3. If it shows **"PENDING"** ⏳, wait for activation
+4. If it doesn't exist, click **"+ ADD IP ADDRESS"** and allow only trusted
+   addresses required by the deployment; do not enable unrestricted access.
+5. Click **"CONFIRM"**
 
 ### Step 3: Verify Database Access
 1. Go to **"Database Access"**
-2. Verify user "AKHI" exists with password "AKHI213"
-3. Click **"Edit"** if needed to update credentials
+2. Use a dedicated least-privilege database account.
+3. Store its connection string only in the backend environment; rotate it if it
+   has been shared or committed.
 
 ### Step 4: Test Connection
 Once IP whitelist is active, run:
@@ -142,7 +139,7 @@ http://localhost:5000/api
 ## 🔧 FIXING MONGODB CONNECTION
 
 ### Option A: Wait for IP Whitelist (Recommended)
-If you just added 0.0.0.0/0, MongoDB Atlas may need 5-10 minutes to activate.
+Use a narrowly scoped trusted-IP allowlist; do not expose the production database to unrestricted network access.
 After that, run:
 ```bash
 npm run seed
@@ -161,7 +158,7 @@ MONGODB_URI=mongodb://localhost:27017/one-call-service
 ### Option C: Check Connection String
 Verify in backend/.env:
 ```env
-MONGODB_URI=mongodb+srv://AKHI:AKHI213@cluster0.i0l1iyu.mongodb.net/one%20call%20service?retryWrites=true&w=majority
+MONGODB_URI=<stored-in-backend-environment>
 ```
 
 If password contains special characters, URL encode them.
@@ -242,7 +239,7 @@ Access: http://localhost:5173/
 **Cause**: MongoDB Atlas IP whitelist not activated
 **Solution**: 
 1. Go to MongoDB Atlas → Network Access
-2. Verify 0.0.0.0/0 shows "ACTIVE" ✅
+Use a narrowly scoped trusted-IP allowlist; do not expose the production database to unrestricted network access.
 3. Wait 5-10 minutes if "PENDING" ⏳
 4. Try again
 
@@ -250,9 +247,9 @@ Access: http://localhost:5173/
 **Cause**: Incorrect credentials
 **Solution**:
 1. Go to MongoDB Atlas → Database Access
-2. Verify user "AKHI" exists
-3. Password is "AKHI213"
-4. Update .env if needed
+2. Verify the dedicated database user's credentials in your secret manager.
+3. Rotate the database password if it has been shared or committed.
+4. Update the backend environment value if needed.
 
 ### Port Already in Use
 **Cause**: Server still running
@@ -306,4 +303,4 @@ curl http://localhost:5000/api/health
 
 **Time to Fix MongoDB**: 5-10 minutes (if just configured)
 
-**Next Action**: Check MongoDB Atlas → Network Access → Verify 0.0.0.0/0 is ACTIVE
+Use a narrowly scoped trusted-IP allowlist; do not expose the production database to unrestricted network access.

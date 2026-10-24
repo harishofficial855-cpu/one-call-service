@@ -13,6 +13,7 @@ import CustomerDashboard from './pages/CustomerDashboard';
 import MyBookings from './pages/MyBookings';
 import ProviderDashboard from './pages/ProviderDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminLogin from './pages/AdminLogin';
 import Offers from './pages/Offers';
 import About from './pages/About';
 import Contact from './pages/Contact';
@@ -21,12 +22,20 @@ import NotFound from './pages/NotFound';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AIChatbot from './components/AIChatbot';
+import AnalyticsTracker from './components/AnalyticsTracker';
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const user = useAuthStore((state) => state.user);
-  if (!user) return <Navigate to="/login" />;
+  if (!user) return <Navigate to={requiredRole === 'admin' ? '/admin' : '/login'} />;
   if (requiredRole && user.role !== requiredRole) return <Navigate to="/" />;
   return children;
+};
+
+const AdminPortal = () => {
+  const user = useAuthStore((state) => state.user);
+  if (user?.role === 'admin') return <AdminDashboard />;
+  if (user) return <Navigate to="/" replace />;
+  return <AdminLogin />;
 };
 
 export default function App() {
@@ -34,6 +43,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <AnalyticsTracker />
       <div className="flex flex-col min-h-screen">
         <Navbar />
         <main className="flex-grow">
@@ -63,6 +73,7 @@ export default function App() {
             <Route path="/provider/dashboard" element={<ProtectedRoute requiredRole="provider"><ProviderDashboard /></ProtectedRoute>} />
 
             {/* Admin */}
+            <Route path="/admin" element={<AdminPortal />} />
             <Route path="/admin/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />

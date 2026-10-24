@@ -59,17 +59,6 @@ const seedDatabase = async () => {
     ]);
     console.log('Created locations');
 
-    // Create admin user
-    const adminUser = await User.create({
-      name: 'Admin',
-      email: 'admin@onecallservice.com',
-      phone: '9876543210',
-      password: 'Admin123',
-      role: 'admin',
-      isActive: true,
-    });
-    console.log('Created admin user');
-
     // Create sample services
     const services = await Service.insertMany([
       // Plumber services

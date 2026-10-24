@@ -19,7 +19,7 @@ export default function Login() {
       const { data } = await api.post('/auth/login', formData);
       login(data.user, data.token);
       const redirectMap = {
-        admin: '/admin/dashboard',
+        admin: '/admin',
         provider: '/provider/dashboard',
         customer: '/dashboard',
       };
@@ -110,11 +110,6 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Demo credentials */}
-        <div className="mt-6 p-4 bg-slate-800/50 border border-slate-700 rounded-xl text-xs text-slate-400">
-          <p className="font-semibold text-slate-300 mb-2">Demo Credentials:</p>
-          <p>Admin: admin@onecallservice.com / Admin123</p>
-        </div>
       </div>
     </div>
   );

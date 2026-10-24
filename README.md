@@ -77,13 +77,25 @@ npm install
 ```
 
 #### Configure Environment Variables
-Open `backend/.env` and update:
+Copy `backend/.env.example` to `backend/.env`, then set:
 ```env
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/one-call-service
-JWT_SECRET=your_jwt_secret_key_here
+JWT_SECRET=generate-a-long-random-secret
+JWT_EXPIRE=1d
 FRONTEND_URL=http://localhost:5173
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD_HASH=your-bcrypt-hash
 ```
+
+Generate the JWT secret and bcrypt password hash locally from the `backend` directory:
+```bash
+node -e "console.log(require('node:crypto').randomBytes(64).toString('hex'))"
+node -e "const readline=require('node:readline/promises'); const rl=readline.createInterface({input:process.stdin,output:process.stdout}); rl.question('Admin password: ').then(password=>require('bcryptjs').hash(password,12)).then(console.log).finally(()=>rl.close())"
+```
+Use a unique password with at least 12 characters. Put the hash (not the
+plaintext password) in `ADMIN_PASSWORD_HASH`. Never put backend secrets in
+frontend environment variables or commit a real `.env` file.
 
 If MongoDB Atlas SRV lookups fail with `ECONNREFUSED`, you can set
 `MONGODB_DNS_SERVERS=8.8.8.8,8.8.4.4` to use explicit DNS resolvers. Only set
@@ -92,9 +104,11 @@ record.
 
 #### Initialize Database
 ```bash
-# Seed sample data
+# Optional: local development only; this clears existing users/services/locations/offers.
 npm run seed
 ```
+The seed script does not create an admin user. Admin credentials are configured
+through the environment variables above.
 
 #### Start Backend Server
 ```bash
@@ -112,11 +126,13 @@ npm install
 ```
 
 #### Configure Environment Variables
-Open `frontend/.env` and verify:
+Copy `frontend/.env.example` to `frontend/.env` and set:
 ```env
 VITE_API_URL=http://localhost:5000/api
-VITE_APP_NAME=One Call Service
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ```
+The GA4 measurement ID is public. Admin passwords, password hashes, JWT secrets,
+and database URLs belong only in the backend environment.
 
 #### Start Frontend Dev Server
 ```bash
@@ -148,6 +164,8 @@ The frontend will start at: **http://localhost:5173**
 
 ### Admin Features
 - ✅ View dashboard statistics
+- ✅ Private `/admin` dashboard with environment-backed login
+- ✅ Date-filtered page-view and provider-contact reports
 - ✅ Manage customers
 - ✅ Manage providers
 - ✅ Verify providers
@@ -163,14 +181,13 @@ The frontend will start at: **http://localhost:5173**
 - ✅ Contact page
 - ✅ Responsive design
 
-## 🔐 Default Credentials
+## 🔐 Admin Login
 
-### Admin Account
-```
-Email: admin@onecallservice.com
-Password: Admin123
-Role: Admin
-```
+There are no default admin credentials. Visit `/admin` and sign in using the
+`ADMIN_EMAIL` and plaintext password corresponding to `ADMIN_PASSWORD_HASH`.
+The `/api/admin/login` endpoint verifies the password with bcrypt and issues a
+short-lived JWT. Use a unique password with at least 12 characters. Public
+registration cannot create admin-role accounts.
 
 ### Test Customer
 Create a new account during registration with role "customer"
@@ -199,11 +216,84 @@ Create a new account during registration with role "provider"
 
 ### Admin Flow
 1. Login as admin
-2. Visit `/admin/dashboard`
+2. Visit `/admin`
 3. View statistics
 4. Manage users and services
 
 ## 🌐 API Endpoints
+
+### Admin and Tracking
+- `POST /api/admin/login` - Environment-backed admin login (rate limited)
+- `GET /api/admin/analytics?from=YYYY-MM-DD&to=YYYY-MM-DD` - Admin-only analytics report
+- `POST /api/tracking/events` - Public, validated and rate-limited event collection
+
+The tracking endpoint accepts only page views and provider `call`/`whatsapp`
+button clicks. It stores an event ID, service/provider-card ID, action, page
+path, and server timestamp; it does not accept phone numbers or message
+contents. Event IDs have a unique MongoDB index so retries are idempotent.
+Contact totals mean button clicks only, not calls actually connected, WhatsApp
+messages sent, or bookings completed. GA4 SPA page views use
+`VITE_GA_MEASUREMENT_ID`; MongoDB reports are stored by the backend.
+
+### Required Environment Variables
+
+| Variable | Where | Purpose |
+| --- | --- | --- |
+| `MONGODB_URI` | Render/backend | MongoDB Atlas connection string |
+| `JWT_SECRET` | Render/backend | Signs existing user and admin JWTs; use a long random value |
+| `ADMIN_EMAIL` | Render/backend | Dedicated admin login email |
+| `ADMIN_PASSWORD_HASH` | Render/backend | bcrypt hash of the admin password; never plaintext |
+| `FRONTEND_URL` | Render/backend | Production Vercel origin allowed by CORS |
+| `VITE_API_URL` | Vercel/frontend build | Render API URL ending in `/api` |
+| `VITE_GA_MEASUREMENT_ID` | Vercel/frontend build | Optional GA4 measurement ID override (`G-...`); otherwise the existing property is retained |
+
+`PORT` is supplied by Render in production; `JWT_EXPIRE` defaults to one day
+for environment-backed admin tokens. Keep optional SMTP, payment, AWS, and DNS
+settings only where existing application features require them.
+
+### Deployment
+
+**Vercel**
+1. Keep the existing Vercel SPA rewrite/build configuration and deploy the
+   existing frontend project; do not create a second frontend.
+2. Add `VITE_API_URL=https://<your-render-service>.onrender.com/api` and
+   `VITE_GA_MEASUREMENT_ID=G-...` in Vercel project environment variables
+   (Production and Preview as appropriate). These `VITE_` values are bundled
+   into the public frontend; never add passwords or signing/database secrets.
+3. Redeploy after changing build environment variables.
+
+**Render**
+1. Keep the existing Node/Express service, set its root directory to `backend`,
+   build command to `npm install`, and start command to `npm start`.
+2. Configure `MONGODB_URI`, a new random `JWT_SECRET`, `JWT_EXPIRE=1d`,
+   `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, `FRONTEND_URL` (the exact Vercel
+   production origin), and `NODE_ENV=production` in the Render environment.
+   Do not run the destructive seed script against production.
+3. Deploy and verify `GET /api/health`, then visit `/admin` and verify the
+   environment-backed admin login and analytics report.
+
+**Security checks**
+- `GET /api/admin/analytics` without a JWT returns `401`; a non-admin JWT
+  returns `403`.
+- Invalid event shapes and invalid date ranges are rejected; repeated event IDs
+  do not create duplicate records. Public event collection is capped at 30
+  requests per IP per minute, and admin login at 10 attempts per IP per 15
+  minutes (in-memory limits apply per running backend instance).
+- Do not log or send customer phone numbers or WhatsApp message contents as
+  analytics parameters. Contact tracking is fire-and-forget so it must not
+  delay the `tel:` or WhatsApp link.
+- If the database contains an old seeded administrator account, rotate or
+  remove it. The original user login is retained for compatibility, so existing
+  admin accounts remain usable through `/login` until removed.
+- Rotate database credentials if they have ever been stored in documentation
+  or committed to source control.
+
+### Database Changes
+
+No manual migration is required. Mongoose creates a `trackingevents`
+collection on first event and ensures indexes for unique event IDs, event
+timestamps, and provider/action reporting. Events use a server-generated UTC
+timestamp and contain no customer identity, phone number, or message body.
 
 ### Authentication
 - `POST /api/auth/register` - Register new user

@@ -175,13 +175,13 @@ MongoDB connection failing because:
 - Click "Cluster0"
 - Go to "Security" → "Network Access"
 - Click "+ ADD IP ADDRESS" (if not already added)
-- Select "Allow Access from Anywhere" (0.0.0.0/0)
+- Allow only trusted addresses required by the deployment; do not use unrestricted production database access.
 - Click "CONFIRM"
 - **Status should show "ACTIVE" ✅**
 
 #### Step 3: Verify Connection
 - Check credentials in backend/.env
-- Password: AKHI213
+- Keep database credentials only in the backend environment and rotate them if they were shared or committed.
 - Database: one-call-service
 
 #### Step 4: Seed Database
@@ -218,22 +218,19 @@ curl http://localhost:5000/api/health
 # Get all services
 curl http://localhost:5000/api/services
 
-# Login
-curl -X POST http://localhost:5000/api/auth/login \
+# Environment-backed admin login
+curl -X POST http://localhost:5000/api/admin/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@onecallservice.com","password":"Admin123"}'
+  -d '{"email":"your-admin-email","password":"your-admin-password"}'
 ```
 
 ---
 
 ## 📱 TEST ACCOUNTS
 
-### Admin Account
-```
-Email: admin@onecallservice.com
-Password: Admin123
-Role: Admin
-```
+### Admin account
+Configure `ADMIN_EMAIL` and a bcrypt `ADMIN_PASSWORD_HASH` in the backend
+environment, then sign in at `/admin`.
 
 ### Create Test Customers/Providers
 - Go to http://localhost:5173/register
@@ -271,7 +268,7 @@ Role: Admin
 4. ✅ **Check Admin**: View service list with delete button
 
 ### Within 5 Minutes ⏱️
-1. Configure MongoDB Atlas IP whitelist (0.0.0.0/0)
+- Allow only trusted addresses required by the deployment; do not use unrestricted production database access.
 2. Verify it shows "ACTIVE"
 3. Run: `npm run seed`
 4. Backend will connect automatically
