@@ -8,6 +8,7 @@ import { randomInt } from 'node:crypto';
 import AdminCredential from '../models/AdminCredential.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { isEmailConfigured, sendAdminPasswordResetCode } from '../services/email.js';
+import { hasOnlyAllowedFields } from '../utils/requestValidation.js';
 
 const PASSWORD_HASH_PATTERN = /^\$2[aby]\$(?:0[4-9]|[12]\d|3[01])\$/;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -94,7 +95,11 @@ export const requestAdminPasswordReset = asyncHandler(async (req, res) => {
     return res.status(503).json({ success: false, message: 'Password reset email is not configured' });
   }
 
-  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  if (!hasOnlyAllowedFields(req.body, ['email'])) {
+    return res.status(400).json({ success: false, message: 'Invalid password reset request.' });
+  }
+
+  const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
   if (email.length > 254 || !EMAIL_PATTERN.test(email)) {
     return res.status(400).json({ success: false, message: 'Enter a valid email address.' });
   }
@@ -113,53 +118,56 @@ export const requestAdminPasswordReset = asyncHandler(async (req, res) => {
   const codeHash = await bcrypt.hash(code, 10);
   const minuteAgo = new Date(now.getTime() - 60 * 1000);
   const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
-  const resetsRequestWindow = {
+  const resetValues = {
+    resetCodeHash: codeHash,
+    resetCodeExpiresAt: new Date(now.getTime() + 10 * 60 * 1000),
+    resetCodeAttempts: 0,
+    resetRequestedAt: now,
+  };
+  const requestCooldownPassed = {
     $or: [
-      { $eq: [{ $ifNull: ['$resetRequestWindowStartedAt', null] }, null] },
-      { $lte: ['$resetRequestWindowStartedAt', hourAgo] },
+      { resetRequestedAt: null },
+      { resetRequestedAt: { $lte: minuteAgo } },
     ],
   };
-  const credential = await AdminCredential.findOneAndUpdate(
+  let credential = await AdminCredential.findOneAndUpdate(
     {
       _id: 'admin',
       $and: [
-        {
-          $or: [
-            { resetRequestedAt: null },
-            { resetRequestedAt: { $lte: minuteAgo } },
-          ],
-        },
+        requestCooldownPassed,
         {
           $or: [
             { resetRequestWindowStartedAt: null },
             { resetRequestWindowStartedAt: { $lte: hourAgo } },
-            { resetRequestCount: { $lt: 5 } },
           ],
         },
       ],
     },
-    [
-      {
-        $set: {
-          resetCodeHash: codeHash,
-          resetCodeExpiresAt: new Date(now.getTime() + 10 * 60 * 1000),
-          resetCodeAttempts: 0,
-          resetRequestedAt: now,
-          resetRequestWindowStartedAt: {
-            $cond: [resetsRequestWindow, now, '$resetRequestWindowStartedAt'],
-          },
-          resetRequestCount: {
-            $cond: [
-              resetsRequestWindow,
-              1,
-              { $add: [{ $ifNull: ['$resetRequestCount', 0] }, 1] },
-            ],
-          },
-        },
+    {
+      $set: {
+        ...resetValues,
+        resetRequestWindowStartedAt: now,
+        resetRequestCount: 1,
       },
-    ],
+    },
     { new: true }
   );
+
+  if (!credential) {
+    credential = await AdminCredential.findOneAndUpdate(
+      {
+        _id: 'admin',
+        ...requestCooldownPassed,
+        resetRequestWindowStartedAt: { $gt: hourAgo, $lte: now },
+        resetRequestCount: { $lt: 5 },
+      },
+      {
+        $set: resetValues,
+        $inc: { resetRequestCount: 1 },
+      },
+      { new: true }
+    );
+  }
 
   if (!credential) {
     return res.status(429).json({
@@ -197,7 +205,11 @@ export const resetAdminPassword = asyncHandler(async (req, res) => {
     return res.status(503).json({ success: false, message: 'Password reset is unavailable' });
   }
 
-  const { email, code, newPassword } = req.body || {};
+  if (!hasOnlyAllowedFields(req.body, ['email', 'code', 'newPassword'])) {
+    return res.status(400).json({ success: false, message: 'Invalid password reset request.' });
+  }
+
+  const { email, code, newPassword } = req.body;
   if (
     typeof email !== 'string' ||
     typeof code !== 'string' ||
