@@ -14,6 +14,7 @@ import MyBookings from './pages/MyBookings';
 import ProviderDashboard from './pages/ProviderDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
+import AdminPasswordReset from './pages/AdminPasswordReset';
 import Offers from './pages/Offers';
 import About from './pages/About';
 import Contact from './pages/Contact';
@@ -74,6 +75,7 @@ export default function App() {
 
             {/* Admin */}
             <Route path="/admin" element={<AdminPortal />} />
+            <Route path="/admin/forgot-password" element={<AdminPasswordReset />} />
             <Route path="/admin/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Lock, Mail, ShieldCheck } from 'lucide-react';
 import api from '../services/api';
 import { useAuthStore } from '../store';
@@ -60,6 +60,14 @@ export default function AdminLogin() {
               <input id="admin-password" type="password" autoComplete="current-password" value={password}
                 onChange={(event) => setPassword(event.target.value)} className="input-field pl-12" required />
             </div>
+          </div>
+          <div className="text-right">
+            <Link
+              to="/admin/forgot-password"
+              className="text-sm font-semibold text-amber-300 hover:text-amber-200 underline underline-offset-4"
+            >
+              Forgot Password?
+            </Link>
           </div>
           <button type="submit" disabled={loading}
             className="btn-primary w-full flex items-center justify-center gap-2 py-3 disabled:opacity-60">

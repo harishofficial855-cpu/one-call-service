@@ -85,7 +85,11 @@ JWT_SECRET=generate-a-long-random-secret
 JWT_EXPIRE=1d
 FRONTEND_URL=http://localhost:5173
 ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD_HASH=your-bcrypt-hash
+ADMIN_PASSWORD_HASH=your-initial-bcrypt-hash
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your_email@example.com
+SMTP_PASSWORD=your_smtp_password
 ```
 
 Generate the JWT secret and bcrypt password hash locally from the `backend` directory:
@@ -184,10 +188,41 @@ The frontend will start at: **http://localhost:5173**
 ## 🔐 Admin Login
 
 There are no default admin credentials. Visit `/admin` and sign in using the
-`ADMIN_EMAIL` and plaintext password corresponding to `ADMIN_PASSWORD_HASH`.
+`ADMIN_EMAIL` and password corresponding to `ADMIN_PASSWORD_HASH`. The first
+admin login attempt or matching reset request initializes a private MongoDB
+`admincredentials` record from that bcrypt hash. After initialization, that
+database hash is authoritative, so password resets persist across Render
+restarts; keep a valid `ADMIN_PASSWORD_HASH` configured as the bootstrap value.
 The `/api/admin/login` endpoint verifies the password with bcrypt and issues a
 short-lived JWT. Use a unique password with at least 12 characters. Public
 registration cannot create admin-role accounts.
+
+### Admin Password Reset
+
+The admin sign-in page links to `/admin/forgot-password`. Configure working
+SMTP credentials on the backend using `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
+and `SMTP_PASSWORD`; port 465 uses implicit TLS, while other ports use standard
+SMTP transport security. The sender address is `SMTP_USER`. The application
+does not report a reset code as sent when SMTP is missing or delivery fails.
+
+The backend stores only a bcrypt hash of each randomly generated code. Codes
+expire after 10 minutes, are invalidated after five failed verification
+attempts, and can be used once. Requests have a one-minute cooldown and a
+five-per-hour cap per admin account; endpoints are also rate limited by client
+IP (per running backend instance). The reset request response is intentionally
+generic to reduce account enumeration. Passwords must be 12–128 characters. Do
+not log or share reset codes, passwords, or database credential records.
+
+To test locally, run the backend with a reachable MongoDB database and valid
+SMTP settings, then run the frontend with `VITE_API_URL=http://localhost:5000/api`.
+Open `http://localhost:5173/admin`, select **Forgot Password?**, request a code
+for `ADMIN_EMAIL`, and complete the email/code/new-password form. Verify that
+the new password signs in and the previous password no longer does. Also check
+that a wrong code is rejected and five failed code attempts invalidate that
+code. On Render, set the SMTP variables only in the backend environment and
+redeploy; on Vercel, keep only frontend variables such as `VITE_API_URL`.
+Confirm actual message delivery using the configured provider before relying
+on password reset in production.
 
 ### Test Customer
 Create a new account during registration with role "customer"
@@ -219,11 +254,14 @@ Create a new account during registration with role "provider"
 2. Visit `/admin`
 3. View statistics
 4. Manage users and services
+5. If locked out, use **Forgot Password?** and complete the emailed-code flow
 
 ## 🌐 API Endpoints
 
 ### Admin and Tracking
 - `POST /api/admin/login` - Environment-backed admin login (rate limited)
+- `POST /api/admin/password-reset/request` - Request an email reset code (rate limited)
+- `POST /api/admin/password-reset/confirm` - Verify the code and set a new password (rate limited)
 - `GET /api/admin/analytics?from=YYYY-MM-DD&to=YYYY-MM-DD` - Admin-only analytics report
 - `POST /api/tracking/events` - Public, validated and rate-limited event collection
 
@@ -242,14 +280,19 @@ messages sent, or bookings completed. GA4 SPA page views use
 | `MONGODB_URI` | Render/backend | MongoDB Atlas connection string |
 | `JWT_SECRET` | Render/backend | Signs existing user and admin JWTs; use a long random value |
 | `ADMIN_EMAIL` | Render/backend | Dedicated admin login email |
-| `ADMIN_PASSWORD_HASH` | Render/backend | bcrypt hash of the admin password; never plaintext |
+| `ADMIN_PASSWORD_HASH` | Render/backend | Initial bcrypt hash used to bootstrap the MongoDB admin credential; never plaintext |
+| `SMTP_HOST` | Render/backend | SMTP server hostname for reset emails |
+| `SMTP_PORT` | Render/backend | SMTP server port (465 for implicit TLS; commonly 587 for STARTTLS) |
+| `SMTP_USER` | Render/backend | SMTP username and reset-email sender address |
+| `SMTP_PASSWORD` | Render/backend | SMTP password or provider app password |
 | `FRONTEND_URL` | Render/backend | Production Vercel origin allowed by CORS |
 | `VITE_API_URL` | Vercel/frontend build | Render API URL ending in `/api` |
 | `VITE_GA_MEASUREMENT_ID` | Vercel/frontend build | Optional GA4 measurement ID override (`G-...`); otherwise the existing property is retained |
 
 `PORT` is supplied by Render in production; `JWT_EXPIRE` defaults to one day
-for environment-backed admin tokens. Keep optional SMTP, payment, AWS, and DNS
-settings only where existing application features require them.
+for admin tokens. SMTP settings are required for password reset email; payment,
+AWS, and DNS settings are only needed where existing application features use
+them.
 
 ### Deployment
 
@@ -266,11 +309,16 @@ settings only where existing application features require them.
 1. Keep the existing Node/Express service, set its root directory to `backend`,
    build command to `npm install`, and start command to `npm start`.
 2. Configure `MONGODB_URI`, a new random `JWT_SECRET`, `JWT_EXPIRE=1d`,
-   `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, `FRONTEND_URL` (the exact Vercel
-   production origin), and `NODE_ENV=production` in the Render environment.
+   `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
+   `SMTP_PASSWORD`, `FRONTEND_URL` (the exact Vercel production origin), and
+   `NODE_ENV=production` in the Render environment. Use your mail provider's
+   approved SMTP credentials; never use a personal account password where an
+   app password or service credential is supported.
    Do not run the destructive seed script against production.
 3. Deploy and verify `GET /api/health`, then visit `/admin` and verify the
-   environment-backed admin login and analytics report.
+   admin login and analytics report. To verify email reset, request a code
+   using the configured admin email and confirm delivery before relying on the
+   feature in production.
 
 **Security checks**
 - `GET /api/admin/analytics` without a JWT returns `401`; a non-admin JWT
@@ -294,6 +342,10 @@ No manual migration is required. Mongoose creates a `trackingevents`
 collection on first event and ensures indexes for unique event IDs, event
 timestamps, and provider/action reporting. Events use a server-generated UTC
 timestamp and contain no customer identity, phone number, or message body.
+The first admin login attempt or matching password-reset request creates the `admincredentials`
+record from `ADMIN_PASSWORD_HASH`; reset flows update this MongoDB record
+without modifying Render environment variables. Restrict database access to
+the backend service and include this collection in secure backups.
 
 ### Authentication
 - `POST /api/auth/register` - Register new user
