@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Bell, CheckCheck, Clock3 } from 'lucide-react';
 import api from '../services/api';
+import { useNotificationStore } from '../store';
 
 export default function Notifications() {
+  const setUnreadCount = useNotificationStore((state) => state.setUnreadCount);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -13,13 +15,15 @@ export default function Notifications() {
     setError('');
     try {
       const { data } = await api.get('/notifications');
-      setNotifications(data.notifications || []);
+      const result = data.notifications || [];
+      setNotifications(result);
+      setUnreadCount(result.filter((notification) => !notification.isRead).length);
     } catch {
       setError('We could not load your notifications. Please try again.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setUnreadCount]);
 
   useEffect(() => {
     loadNotifications();
@@ -30,7 +34,11 @@ export default function Notifications() {
     setUpdating(true);
     try {
       const { data } = await api.put(`/notifications/${notification._id}/read`);
-      setNotifications((current) => current.map((item) => item._id === notification._id ? data.notification : item));
+      setNotifications((current) => {
+        const updated = current.map((item) => item._id === notification._id ? data.notification : item);
+        setUnreadCount(updated.filter((item) => !item.isRead).length);
+        return updated;
+      });
     } catch {
       setError('This notification could not be marked as read. Please try again.');
     } finally {
@@ -43,6 +51,7 @@ export default function Notifications() {
     try {
       await api.put('/notifications/read-all');
       setNotifications((current) => current.map((notification) => ({ ...notification, isRead: true })));
+      setUnreadCount(0);
     } catch {
       setError('Your notifications could not be marked as read. Please try again.');
     } finally {

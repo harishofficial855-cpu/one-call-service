@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, LayoutGrid, Menu, MoreHorizontal, Search, UserCircle,
   ClipboardList, Bell, LogOut, X, Briefcase, Settings, MapPin,
 } from 'lucide-react';
-import { useAuthStore } from '../store';
+import api from '../services/api';
+import { useAuthStore, useNotificationStore } from '../store';
 
 const navLinks = [
   ['/services', 'Services'],
@@ -20,7 +21,7 @@ function DashboardLink({ user }) {
   return '/dashboard';
 }
 
-function MobileNavigation({ user }) {
+function MobileNavigation({ user, unreadCount }) {
   const bookingsPath = user?.role === 'admin'
     ? '/admin/dashboard'
     : user?.role === 'provider'
@@ -30,7 +31,7 @@ function MobileNavigation({ user }) {
     { to: '/', label: 'Home', icon: Home, end: true },
     { to: '/services', label: 'Services', icon: LayoutGrid },
     { to: bookingsPath, label: 'Bookings', icon: ClipboardList },
-    { to: '/notifications', label: 'Alerts', icon: Bell },
+    { to: '/notifications', label: 'Notifications', icon: Bell },
     { to: '/offers', label: 'More', icon: MoreHorizontal },
   ];
 
@@ -42,10 +43,13 @@ function MobileNavigation({ user }) {
             key={to}
             to={to}
             end={end}
-            aria-label={label === 'Alerts' ? 'Notifications' : label}
+            aria-label={label}
             className={({ isActive }) => `flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl text-[10px] font-semibold transition ${isActive ? 'text-blue-700' : 'text-slate-500 hover:text-blue-700'}`}
           >
-            <Icon className="h-5 w-5" aria-hidden="true" />
+            <span className="relative">
+              <Icon className="h-5 w-5" aria-hidden="true" />
+              {label === 'Notifications' && unreadCount > 0 && <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold text-white">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+            </span>
             <span>{label}</span>
           </NavLink>
         ))}
@@ -59,9 +63,27 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [search, setSearch] = useState('');
   const { user, logout } = useAuthStore();
+  const { unreadCount, setUnreadCount } = useNotificationStore();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const dashboardPath = DashboardLink({ user });
   const locationLabel = [user?.address?.area, user?.address?.city].filter(Boolean).join(', ');
+
+  React.useEffect(() => {
+    if (!user) {
+      setUnreadCount(0);
+      return undefined;
+    }
+    let active = true;
+    api.get('/notifications/unread-count')
+      .then(({ data }) => {
+        if (active) setUnreadCount(data.unreadCount || 0);
+      })
+      .catch((error) => {
+        console.error('Could not load unread notification count.', error);
+      });
+    return () => { active = false; };
+  }, [user, pathname, setUnreadCount]);
 
   const submitSearch = (event) => {
     event.preventDefault();
@@ -122,6 +144,16 @@ export default function Navbar() {
             </nav>
 
             <div className="hidden shrink-0 items-center gap-3 md:flex">
+              {user && (
+                <Link
+                  to="/notifications"
+                  aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ''}`}
+                  className="relative rounded-xl p-2 text-slate-600 transition hover:bg-blue-50 hover:text-blue-700"
+                >
+                  <Bell className="h-5 w-5" aria-hidden="true" />
+                  {unreadCount > 0 && <span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold text-white">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+                </Link>
+              )}
               {!user ? (
                 <>
                   <Link to="/login" className="text-sm font-semibold text-slate-600 hover:text-blue-800">Sign in</Link>
@@ -180,7 +212,7 @@ export default function Navbar() {
           )}
         </div>
       </header>
-      <MobileNavigation user={user} />
+      <MobileNavigation user={user} unreadCount={unreadCount} />
     </>
   );
 }

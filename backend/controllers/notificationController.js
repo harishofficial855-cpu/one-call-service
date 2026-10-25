@@ -16,8 +16,8 @@ export const getMyNotifications = asyncHandler(async (req, res) => {
 export const markAsRead = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const notification = await Notification.findByIdAndUpdate(
-    id,
+  const notification = await Notification.findOneAndUpdate(
+    { _id: id, userId: req.user.id },
     { isRead: true },
     { new: true }
   );
@@ -51,7 +51,10 @@ export const markAllAsRead = asyncHandler(async (req, res) => {
 export const deleteNotification = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const notification = await Notification.findByIdAndDelete(id);
+  const notification = await Notification.findOneAndDelete({
+    _id: id,
+    userId: req.user.id,
+  });
 
   if (!notification) {
     return res.status(404).json({

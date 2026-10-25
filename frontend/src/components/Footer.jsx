@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { useAuthStore } from '../store';
 
+const FOUNDER_IMG = 'https://1drv.ms/i/c/250f6a28e9ace4e2/IQCQulF9oh8ZSYysgUXk9CAIAZV42NDPY2u9Pk-em-BaQ2Y?e=RKHlpG';
+
 export default function Footer() {
+  const [founderImageFailed, setFounderImageFailed] = useState(false);
   const user = useAuthStore((state) => state.user);
   const accountPath = user?.role === 'admin'
     ? '/admin/dashboard'
@@ -30,11 +33,21 @@ export default function Footer() {
               Explore local home-service listings and book through One Call Service.
             </p>
             <div className="mt-5 flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
-              <img
-                src="https://1drv.ms/i/c/250f6a28e9ace4e2/IQCQulF9oh8ZSYysgUXk9CAIAZV42NDPY2u9Pk-em-BaQ2Y?e=chbc6O"
-                alt="Golanakonda Harish"
-                className="h-12 w-12 shrink-0 rounded-full border-2 border-blue-200 object-cover"
-              />
+              {!founderImageFailed ? (
+                <img
+                  src={FOUNDER_IMG}
+                  alt="Golanakonda Harish"
+                  onError={() => setFounderImageFailed(true)}
+                  className="h-12 w-12 shrink-0 rounded-full border-2 border-blue-200 object-cover"
+                />
+              ) : (
+                <span
+                  aria-label="Founder image unavailable"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-blue-200 bg-blue-700 text-sm font-bold text-white"
+                >
+                  GH
+                </span>
+              )}
               <div>
                 <p className="text-sm font-bold text-slate-900">Golanakonda Harish</p>
                 <p className="text-xs font-semibold text-blue-700">Founder &amp; CEO</p>
