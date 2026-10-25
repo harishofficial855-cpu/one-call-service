@@ -25,9 +25,12 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-3">
             <img
-              src="https://static.vecteezy.com/system/resources/previews/004/697/926/original/modern-and-professional-call-center-logo-design-free-vector.jpg"
+              src="/logo.png"
               alt="One Call Service"
               className="h-11 w-11 rounded-xl object-cover shadow-sm border border-[#e8e0cc]"
+              onError={(e) => {
+                e.target.src = 'https://static.vecteezy.com/system/resources/previews/004/697/926/original/modern-and-professional-call-center-logo-design-free-vector.jpg';
+              }}
             />
             <div>
               <span className="text-lg font-black text-amber-700 tracking-tight">ONE CALL</span>

@@ -12,9 +12,12 @@ export default function Footer() {
           <div className="md:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
               <img
-                src="https://static.vecteezy.com/system/resources/previews/004/697/926/original/modern-and-professional-call-center-logo-design-free-vector.jpg"
+                src="/logo.png"
                 alt="One Call Service"
                 className="h-12 w-12 rounded-xl object-cover border border-[#e8e0cc]"
+                onError={(e) => {
+                  e.target.src = 'https://static.vecteezy.com/system/resources/previews/004/697/926/original/modern-and-professional-call-center-logo-design-free-vector.jpg';
+                }}
               />
               <div>
                 <p className="text-amber-800 font-black text-lg">ONE CALL</p>
