@@ -33,7 +33,7 @@ export default function MyBookings() {
         <button
           onClick={() => setFilter('')}
           className={`px-4 py-2 rounded-lg transition ${
-            !filter ? 'bg-indigo-600 text-white' : 'bg-gray-200'
+            !filter ? 'bg-blue-700 text-white' : 'bg-gray-200'
           }`}
         >
           All
@@ -43,7 +43,7 @@ export default function MyBookings() {
             key={status}
             onClick={() => setFilter(status)}
             className={`px-4 py-2 rounded-lg transition ${
-              filter === status ? 'bg-indigo-600 text-white' : 'bg-gray-200'
+              filter === status ? 'bg-blue-700 text-white' : 'bg-gray-200'
             }`}
           >
             {status}
@@ -85,7 +85,7 @@ export default function MyBookings() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Amount</p>
-                  <p className="font-semibold text-indigo-600">₹{booking.finalAmount}</p>
+                  <p className="font-semibold text-blue-700">₹{booking.finalAmount}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Payment</p>

@@ -11,9 +11,9 @@ const LANG_MAP = {
 };
 
 const GREETINGS = [
-  'Hello! I am One Call Service AI. Ask me about any service — plumber, electrician, haircut, chef and more! You can also speak to me. 😊',
-  'నమస్కారం! నేను One Call Service AI. మీకు ఏ సేవ కావాలో చెప్పండి — plumber, electrician, haircut మొదలైనవి! 😊',
-  'नमस्ते! मैं One Call Service AI हूँ। कोई भी सेवा पूछें — plumber, electrician, haircut, chef आदि! 😊',
+  'Hello! I am One Call Service AI. Ask me to find services currently listed on One Call Service. You can also speak to me. 😊',
+  'నమస్కారం! One Call Service లో ప్రస్తుతం అందుబాటులో ఉన్న సేవల గురించి అడగండి. మీరు నాతో మాట్లాడవచ్చు. 😊',
+  'नमस्ते! One Call Service पर उपलब्ध सेवाओं के बारे में पूछें। आप मुझसे बोलकर भी पूछ सकते हैं। 😊',
 ];
 
 function detectLang(text) {
@@ -132,7 +132,7 @@ export default function AIChatbot() {
       {/* Floating button */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-amber-500 hover:bg-amber-600 text-white rounded-full shadow-2xl flex items-center justify-center transition-all"
+        className="fixed bottom-32 right-4 z-[60] flex h-14 w-14 items-center justify-center rounded-full bg-blue-700 text-white shadow-2xl transition-all hover:bg-blue-800 sm:right-6 md:bottom-6"
         title="One Call Service AI"
       >
         {open ? <X size={24} /> : <MessageCircle size={24} />}
@@ -140,13 +140,13 @@ export default function AIChatbot() {
 
       {/* Chat window */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 bg-[#fffef9] rounded-2xl shadow-2xl border border-[#e8e0cc] flex flex-col overflow-hidden" style={{ maxHeight: '70vh' }}>
+        <div className="fixed bottom-24 right-4 z-[60] flex w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-2xl sm:right-6 sm:w-96" style={{ maxHeight: '70vh' }}>
           {/* Header */}
-          <div className="bg-amber-500 px-4 py-3 flex items-center gap-3">
+          <div className="flex items-center gap-3 bg-blue-700 px-4 py-3">
             <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center text-lg">🤖</div>
             <div>
               <p className="text-white font-black text-sm">One Call Service AI</p>
-              <p className="text-amber-100 text-xs">Telugu • Hindi • English</p>
+              <p className="text-blue-100 text-xs">Telugu • Hindi • English</p>
             </div>
             <button onClick={() => speak(messages[messages.length - 1]?.text || '', 'en-IN')} className="ml-auto text-white/80 hover:text-white" title="Replay last message">
               <Volume2 size={18} />
@@ -159,8 +159,8 @@ export default function AIChatbot() {
               <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] px-4 py-2 rounded-2xl text-sm whitespace-pre-wrap ${
                   m.role === 'user'
-                    ? 'bg-amber-500 text-white rounded-br-sm'
-                    : 'bg-[#f5f0e8] text-[#2c2416] rounded-bl-sm border border-[#e8e0cc]'
+                    ? 'bg-blue-700 text-white rounded-br-sm'
+                    : 'bg-blue-50 text-slate-800 rounded-bl-sm border border-blue-100'
                 }`}>
                   {m.text}
                 </div>
@@ -168,7 +168,7 @@ export default function AIChatbot() {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-[#f5f0e8] border border-[#e8e0cc] px-4 py-2 rounded-2xl rounded-bl-sm text-sm text-[#7a6a4a]">
+                <div className="bg-blue-50 border border-blue-100 px-4 py-2 rounded-2xl rounded-bl-sm text-sm text-slate-600">
                   Searching... ⏳
                 </div>
               </div>
@@ -177,10 +177,10 @@ export default function AIChatbot() {
           </div>
 
           {/* Input */}
-          <div className="p-3 border-t border-[#e8e0cc] flex gap-2">
+          <div className="flex gap-2 border-t border-slate-200 p-3">
             <button
               onClick={toggleListen}
-              className={`p-2 rounded-xl transition-all ${listening ? 'bg-red-500 text-white animate-pulse' : 'bg-[#f5f0e8] text-amber-600 hover:bg-amber-100'}`}
+              className={`p-2 rounded-xl transition-all ${listening ? 'bg-red-500 text-white animate-pulse' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}`}
               title={listening ? 'Stop listening' : 'Speak'}
             >
               {listening ? <MicOff size={18} /> : <Mic size={18} />}
@@ -191,12 +191,12 @@ export default function AIChatbot() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Type or speak in any language..."
-              className="flex-1 bg-[#f5f0e8] border border-[#e8e0cc] rounded-xl px-3 py-2 text-sm text-[#2c2416] placeholder-[#b8a98a] focus:outline-none focus:border-amber-400"
+              className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-400 focus:outline-none"
             />
             <button
               onClick={() => handleSend()}
               disabled={!input.trim() || loading}
-              className="p-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition-all disabled:opacity-40"
+              className="rounded-xl bg-blue-700 p-2 text-white transition-all hover:bg-blue-800 disabled:opacity-40"
             >
               <Send size={18} />
             </button>

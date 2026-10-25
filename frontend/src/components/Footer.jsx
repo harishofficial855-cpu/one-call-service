@@ -1,100 +1,87 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, MapPin, Phone } from 'lucide-react';
+import { useAuthStore } from '../store';
 
 export default function Footer() {
+  const user = useAuthStore((state) => state.user);
+  const accountPath = user?.role === 'admin'
+    ? '/admin/dashboard'
+    : user?.role === 'provider'
+      ? '/provider/dashboard'
+      : '/dashboard';
+  const accountLinks = user
+    ? [[accountPath, 'Dashboard'], ...(user.role === 'customer' ? [['/my-bookings', 'My bookings']] : []), ['/notifications', 'Notifications']]
+    : [['/login', 'Sign in'], ['/register', 'Create an account']];
+
   return (
-    <footer className="bg-[#f5f0e8] border-t border-[#e8e0cc]">
-      <div className="container-custom py-14">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-
-          {/* Brand + Founder */}
-          <div className="md:col-span-1">
-            <div className="flex items-center space-x-3 mb-4">
-              <img
-                src="/logo.png"
-                alt="One Call Service"
-                className="h-12 w-12 rounded-xl object-cover border border-[#e8e0cc]"
-                onError={(e) => {
-                  e.target.src = 'https://static.vecteezy.com/system/resources/previews/004/697/926/original/modern-and-professional-call-center-logo-design-free-vector.jpg';
-                }}
-              />
-              <div>
-                <p className="text-amber-800 font-black text-lg">ONE CALL</p>
-                <p className="text-amber-500 text-xs font-semibold tracking-widest uppercase">Premium Services</p>
-              </div>
-            </div>
-            <p className="text-[#7a6a4a] text-sm leading-relaxed mb-5">
-              Your trusted platform for verified home service professionals. Quality guaranteed.
+    <footer className="border-t border-slate-200 bg-white">
+      <div className="container-custom py-12 sm:py-14">
+        <div className="grid grid-cols-1 gap-9 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <Link to="/" className="mb-4 inline-flex items-center gap-3">
+              <img src="/logo.png" alt="" className="h-11 w-11 rounded-xl border border-slate-200 object-cover" />
+              <span>
+                <span className="block text-lg font-black text-blue-950">ONE CALL</span>
+                <span className="block text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-600">Home Services</span>
+              </span>
+            </Link>
+            <p className="text-sm leading-relaxed text-slate-600">
+              Explore local home-service listings and book through One Call Service.
             </p>
-
-            {/* Founder */}
-            <div className="flex items-center space-x-3 bg-[#fffef9] border border-[#e8e0cc] rounded-2xl p-3">
+            <div className="mt-5 flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
               <img
                 src="https://1drv.ms/i/c/250f6a28e9ace4e2/IQCQulF9oh8ZSYysgUXk9CAIAZV42NDPY2u9Pk-em-BaQ2Y?e=chbc6O"
                 alt="Golanakonda Harish"
-                className="w-14 h-14 rounded-full object-cover border-2 border-amber-400 flex-shrink-0"
-                onError={(e) => {
-                  e.target.src = 'https://ui-avatars.com/api/?name=Golanakonda+Harish&background=d97706&color=fff&size=56';
-                }}
+                className="h-12 w-12 shrink-0 rounded-full border-2 border-blue-200 object-cover"
               />
               <div>
-                <p className="text-[#2c2416] font-bold text-sm">Golanakonda Harish</p>
-                <p className="text-amber-600 text-xs font-semibold">Founder & CEO</p>
+                <p className="text-sm font-bold text-slate-900">Golanakonda Harish</p>
+                <p className="text-xs font-semibold text-blue-700">Founder &amp; CEO</p>
               </div>
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h4 className="text-[#2c2416] font-bold mb-4">Quick Links</h4>
+            <h2 className="mb-4 font-bold text-slate-900">Quick links</h2>
             <ul className="space-y-3 text-sm">
-              {[['/services','Services'],['/offers','Offers'],['/about','About Us'],['/contact','Contact'],['/register-provider','Register Service']].map(([path, label]) => (
-                <li key={path}>
-                  <Link to={path} className="text-[#7a6a4a] hover:text-amber-600 transition-colors">{label}</Link>
-                </li>
+              {[['/services', 'Services'], ['/offers', 'Offers'], ['/about', 'About us'], ['/contact', 'Contact'], ['/register-provider', 'Register as a provider']].map(([path, label]) => (
+                <li key={path}><Link to={path} className="text-slate-600 transition-colors hover:text-blue-700">{label}</Link></li>
               ))}
             </ul>
           </div>
 
-          {/* Services */}
           <div>
-            <h4 className="text-[#2c2416] font-bold mb-4">Services</h4>
+            <h2 className="mb-4 font-bold text-slate-900">Your account</h2>
             <ul className="space-y-3 text-sm">
-              {['Plumber','House Cleaning','Electrician','Haircut','Water Tank Cleaning','Chef','Nurse'].map((s) => (
-                <li key={s}>
-                  <Link to="/services" className="text-[#7a6a4a] hover:text-amber-600 transition-colors">{s}</Link>
-                </li>
+              {accountLinks.map(([path, label]) => (
+                <li key={path}><Link to={path} className="text-slate-600 transition-colors hover:text-blue-700">{label}</Link></li>
               ))}
             </ul>
           </div>
 
-          {/* Contact */}
           <div>
-            <h4 className="text-[#2c2416] font-bold mb-4">Contact</h4>
+            <h2 className="mb-4 font-bold text-slate-900">Contact</h2>
             <ul className="space-y-3 text-sm">
-              <li className="flex items-center space-x-3 text-[#7a6a4a]">
-                <Phone className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                <a href="tel:+919989730775" className="hover:text-amber-600 transition-colors">+91 9989730775</a>
+              <li className="flex items-center gap-3 text-slate-600">
+                <Phone className="h-4 w-4 shrink-0 text-blue-600" />
+                <a href="tel:+919989730775" className="transition-colors hover:text-blue-700">+91 9989730775</a>
               </li>
-              <li className="flex items-center space-x-3 text-[#7a6a4a]">
-                <Mail className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                <a href="mailto:harishoffical855@gmail.com" className="hover:text-amber-600 transition-colors">harishoffical855@gmail.com</a>
+              <li className="flex items-center gap-3 text-slate-600">
+                <Mail className="h-4 w-4 shrink-0 text-blue-600" />
+                <a href="mailto:harishoffical855@gmail.com" className="break-all transition-colors hover:text-blue-700">harishoffical855@gmail.com</a>
               </li>
-              <li className="flex items-start space-x-3 text-[#7a6a4a]">
-                <MapPin className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 text-slate-600">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
                 <span>Warangal, Telangana, India</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-[#e8e0cc] mt-10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-[#b8a98a] text-sm">© 2024 One Call Service. All rights reserved.</p>
-          <div className="flex space-x-6 text-sm">
-            <a href="#" className="text-[#b8a98a] hover:text-amber-600 transition-colors">Privacy Policy</a>
-            <a href="#" className="text-[#b8a98a] hover:text-amber-600 transition-colors">Terms of Service</a>
-          </div>
+        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-slate-200 pt-6 text-center sm:flex-row sm:text-left">
+          <p className="text-xs text-slate-400">© {new Date().getFullYear()} One Call Service. All rights reserved.</p>
+          <Link to="/contact" className="text-xs font-medium text-slate-400 transition-colors hover:text-blue-700">Contact us</Link>
         </div>
       </div>
     </footer>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuthStore } from '../store';
 import { Mail, Lock, Phone, ArrowRight } from 'lucide-react';
@@ -9,6 +9,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const login = useAuthStore((state) => state.login);
 
   const handleSubmit = async (e) => {
@@ -23,7 +24,11 @@ export default function Login() {
         provider: '/provider/dashboard',
         customer: '/dashboard',
       };
-      navigate(redirectMap[data.user.role] || '/');
+      const returnTo = location.state?.from;
+      navigate(returnTo?.pathname || redirectMap[data.user.role] || '/', {
+        state: returnTo?.state,
+        replace: true,
+      });
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password');
     } finally {
@@ -35,14 +40,14 @@ export default function Login() {
     <div className="min-h-screen bg-slate-900 flex items-center justify-center py-12 px-4">
       {/* Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl" />
       </div>
 
       <div className="relative w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-amber-500/30">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-blue-500/30">
             <Phone className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-black text-white">Welcome Back</h1>
@@ -104,7 +109,7 @@ export default function Login() {
 
           <p className="text-center mt-6 text-slate-400 text-sm">
             Don't have an account?{' '}
-            <Link to="/register" className="text-amber-400 font-semibold hover:text-amber-300 transition-colors">
+            <Link to="/register" state={location.state} className="text-blue-300 font-semibold hover:text-blue-200 transition-colors">
               Create one free
             </Link>
           </p>

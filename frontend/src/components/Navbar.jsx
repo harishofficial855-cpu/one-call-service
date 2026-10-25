@@ -1,113 +1,186 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import {
+  Home, LayoutGrid, Menu, MoreHorizontal, Search, UserCircle,
+  ClipboardList, Bell, LogOut, X, Briefcase, Settings, MapPin,
+} from 'lucide-react';
 import { useAuthStore } from '../store';
-import { Menu, X, LogOut, LayoutDashboard, Briefcase, Settings } from 'lucide-react';
 
-export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, logout } = useAuthStore();
-  const navigate = useNavigate();
+const navLinks = [
+  ['/services', 'Services'],
+  ['/offers', 'Offers'],
+  ['/about', 'About'],
+  ['/contact', 'Contact'],
+];
 
-  const handleLogout = () => { logout(); navigate('/'); };
+function DashboardLink({ user }) {
+  if (!user) return '/login';
+  if (user.role === 'admin') return '/admin/dashboard';
+  if (user.role === 'provider') return '/provider/dashboard';
+  return '/dashboard';
+}
 
-  const dashboardLink =
-    user?.role === 'admin' ? '/admin/dashboard' :
-    user?.role === 'provider' ? '/provider/dashboard' : '/dashboard';
-
-  const navLinks = [
-    ['/', 'Home'], ['/services', 'Services'],
-    ['/offers', 'Offers'], ['/about', 'About'], ['/contact', 'Contact'],
+function MobileNavigation({ user }) {
+  const bookingsPath = user?.role === 'admin'
+    ? '/admin/dashboard'
+    : user?.role === 'provider'
+      ? '/provider/dashboard'
+      : '/my-bookings';
+  const items = [
+    { to: '/', label: 'Home', icon: Home, end: true },
+    { to: '/services', label: 'Services', icon: LayoutGrid },
+    { to: bookingsPath, label: 'Bookings', icon: ClipboardList },
+    { to: '/notifications', label: 'Alerts', icon: Bell },
+    { to: '/offers', label: 'More', icon: MoreHorizontal },
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#faf8f3] border-b border-[#e8e0cc] shadow-sm">
-      <div className="container-custom">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center space-x-3">
-            <img
-              src="/logo.png"
-              alt="One Call Service"
-              className="h-11 w-11 rounded-xl object-cover shadow-sm border border-[#e8e0cc]"
-              onError={(e) => {
-                e.target.src = 'https://static.vecteezy.com/system/resources/previews/004/697/926/original/modern-and-professional-call-center-logo-design-free-vector.jpg';
-              }}
-            />
-            <div>
-              <span className="text-lg font-black text-amber-700 tracking-tight">ONE CALL</span>
-              <p className="text-xs text-amber-500 font-semibold tracking-widest uppercase">Premium Services</p>
-            </div>
-          </Link>
+    <nav aria-label="Mobile navigation" className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 px-2 pb-[max(env(safe-area-inset-bottom),0.35rem)] pt-2 shadow-[0_-6px_24px_rgba(15,23,42,0.08)] backdrop-blur md:hidden">
+      <div className="mx-auto grid max-w-lg grid-cols-5">
+        {items.map(({ to, label, icon: Icon, end }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            aria-label={label === 'Alerts' ? 'Notifications' : label}
+            className={({ isActive }) => `flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl text-[10px] font-semibold transition ${isActive ? 'text-blue-700' : 'text-slate-500 hover:text-blue-700'}`}
+          >
+            <Icon className="h-5 w-5" aria-hidden="true" />
+            <span>{label}</span>
+          </NavLink>
+        ))}
+      </div>
+      {!user && <span className="sr-only">Sign in to view bookings and notifications.</span>}
+    </nav>
+  );
+}
 
-          <div className="hidden md:flex items-center space-x-1">
-            {navLinks.map(([path, label]) => (
-              <Link key={path} to={path}
-                className="px-4 py-2 text-[#5c4a2a] hover:text-amber-700 font-medium transition-colors rounded-lg hover:bg-amber-50 text-sm">
-                {label}
-              </Link>
-            ))}
-            <Link to="/register-provider"
-              className="ml-2 px-4 py-2 bg-amber-500 text-white rounded-xl font-bold text-sm hover:bg-amber-600 transition-all shadow-sm">
-              🔧 Register Service
+export default function Navbar() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
+  const dashboardPath = DashboardLink({ user });
+  const locationLabel = [user?.address?.area, user?.address?.city].filter(Boolean).join(', ');
+
+  const submitSearch = (event) => {
+    event.preventDefault();
+    const query = search.trim();
+    navigate(query ? `/services?search=${encodeURIComponent(query)}` : '/services');
+    setMobileOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  return (
+    <>
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 shadow-sm shadow-slate-900/[0.03] backdrop-blur">
+        <div className="container-custom">
+          <div className="flex h-[4.5rem] items-center justify-between gap-4">
+            <Link to="/" className="flex shrink-0 items-center gap-2.5" aria-label="One Call Service home">
+              <img src="/logo.png" alt="" className="h-10 w-10 rounded-xl object-cover ring-1 ring-slate-200" />
+              <span className="leading-tight">
+                <span className="block text-base font-extrabold tracking-tight text-blue-950">ONE CALL</span>
+                <span className="block text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-600">Home Services</span>
+              </span>
             </Link>
-          </div>
 
-          <div className="hidden md:flex items-center space-x-3">
-            {!user ? (
-              <>
-                <Link to="/login" className="px-4 py-2 text-[#5c4a2a] hover:text-amber-700 font-semibold text-sm">Sign In</Link>
-                <Link to="/register" className="btn-primary text-sm py-2">Get Started</Link>
-              </>
-            ) : (
-              <div className="flex items-center space-x-3">
-                <Link to={dashboardLink}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 hover:border-amber-400 transition-all">
-                  <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center text-xs font-black text-white">
-                    {user.name?.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="text-[#2c2416] text-sm font-semibold">{user.name?.split(' ')[0]}</span>
-                  {user.role === 'admin' && <Settings className="w-4 h-4 text-amber-500" />}
-                  {user.role === 'provider' && <Briefcase className="w-4 h-4 text-amber-500" />}
-                  {user.role === 'customer' && <LayoutDashboard className="w-4 h-4 text-amber-500" />}
-                </Link>
-                <button onClick={handleLogout}
-                  className="p-2 text-[#b8a98a] hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
-                  <LogOut className="w-5 h-5" />
-                </button>
-              </div>
-            )}
-          </div>
+            <Link to="/services" className="hidden min-w-[125px] items-center gap-2 rounded-xl px-2 py-2 text-slate-600 transition hover:bg-blue-50 hover:text-blue-800 lg:flex">
+              <MapPin className="h-5 w-5 shrink-0 text-blue-700" aria-hidden="true" />
+              <span className="min-w-0 leading-tight">
+                <span className="block text-[10px] text-slate-500">Your location</span>
+                <span className="block max-w-32 truncate text-xs font-bold">{locationLabel || 'Choose location'}</span>
+              </span>
+            </Link>
 
-          <button className="md:hidden p-2 text-amber-700" onClick={() => setMobileOpen(!mobileOpen)}>
-            {mobileOpen ? <X /> : <Menu />}
-          </button>
-        </div>
+            <form onSubmit={submitSearch} className="hidden max-w-xl flex-1 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 transition focus-within:border-blue-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-100 md:flex">
+              <Search className="h-4 w-4 text-blue-600" aria-hidden="true" />
+              <label className="sr-only" htmlFor="header-service-search">Search services</label>
+              <input
+                id="header-service-search"
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search for a service"
+                className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+              />
+              <button type="submit" className="rounded-lg bg-blue-700 px-3 py-1.5 text-xs font-bold text-white hover:bg-blue-800">Search</button>
+            </form>
 
-        {mobileOpen && (
-          <div className="md:hidden border-t border-[#e8e0cc] py-4 space-y-1 bg-[#faf8f3]">
-            {navLinks.map(([path, label]) => (
-              <Link key={path} to={path} onClick={() => setMobileOpen(false)}
-                className="block px-4 py-3 text-[#5c4a2a] hover:text-amber-700 hover:bg-amber-50 rounded-lg font-medium">
-                {label}
+            <nav aria-label="Main navigation" className="hidden items-center gap-1 lg:flex">
+              {navLinks.map(([path, label]) => (
+                <NavLink key={path} to={path} className={({ isActive }) => `rounded-lg px-3 py-2 text-sm font-semibold transition ${isActive ? 'bg-blue-50 text-blue-800' : 'text-slate-600 hover:bg-slate-50 hover:text-blue-800'}`}>
+                  {label}
+                </NavLink>
+              ))}
+              <Link to="/register-provider" className="ml-1 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800">
+                Join as provider
               </Link>
-            ))}
-            <Link to="/register-provider" onClick={() => setMobileOpen(false)}
-              className="block px-4 py-3 text-amber-600 font-bold">🔧 Register Service</Link>
-            <div className="pt-2 border-t border-[#e8e0cc] space-y-2">
+            </nav>
+
+            <div className="hidden shrink-0 items-center gap-3 md:flex">
               {!user ? (
                 <>
-                  <Link to="/login" onClick={() => setMobileOpen(false)} className="block px-4 py-3 text-[#5c4a2a] font-semibold">Sign In</Link>
-                  <Link to="/register" onClick={() => setMobileOpen(false)} className="block mx-4 btn-primary text-center">Get Started</Link>
+                  <Link to="/login" className="text-sm font-semibold text-slate-600 hover:text-blue-800">Sign in</Link>
+                  <Link to="/register" className="rounded-xl border border-blue-700 px-4 py-2.5 text-sm font-bold text-blue-700 transition hover:bg-blue-50">Get started</Link>
                 </>
               ) : (
                 <>
-                  <Link to={dashboardLink} onClick={() => setMobileOpen(false)} className="block px-4 py-3 text-amber-700 font-semibold">Dashboard</Link>
-                  <button onClick={handleLogout} className="block w-full text-left px-4 py-3 text-red-500 font-semibold">Logout</button>
+                  <Link to={dashboardPath} aria-label="Open your account" className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-blue-100 bg-blue-50 text-blue-700 transition hover:ring-2 hover:ring-blue-200">
+                    {user.profilePhoto
+                      ? <img src={user.profilePhoto} alt="" className="h-full w-full object-cover" />
+                      : <UserCircle className="h-5 w-5" aria-hidden="true" />}
+                  </Link>
+                  <button type="button" onClick={handleLogout} aria-label="Sign out" className="rounded-lg p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600">
+                    <LogOut className="h-5 w-5" aria-hidden="true" />
+                  </button>
                 </>
               )}
             </div>
+
+            <Link to={user ? dashboardPath : '/login'} aria-label={user ? 'Open your account' : 'Sign in'} className="flex h-10 w-10 items-center justify-center rounded-full border border-blue-100 bg-blue-50 text-blue-700 md:hidden">
+              {user?.profilePhoto ? <img src={user.profilePhoto} alt="" className="h-full w-full rounded-full object-cover" /> : <UserCircle className="h-5 w-5" aria-hidden="true" />}
+            </Link>
+            <button type="button" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} aria-expanded={mobileOpen} onClick={() => setMobileOpen((open) => !open)} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden">
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
           </div>
-        )}
-      </div>
-    </nav>
+
+          <form onSubmit={submitSearch} className="flex items-center gap-2 pb-3 md:hidden">
+            <label className="flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
+              <Search className="h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
+              <span className="sr-only">Search services</span>
+              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search for a service" className="min-w-0 flex-1 bg-transparent py-2.5 text-sm outline-none placeholder:text-slate-400" />
+            </label>
+            <button type="submit" aria-label="Search" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-700 text-white hover:bg-blue-800"><Search className="h-4 w-4" /></button>
+          </form>
+
+          {mobileOpen && (
+            <div className="border-t border-slate-100 py-3 lg:hidden">
+              <div className="grid gap-1">
+                {navLinks.map(([path, label]) => (
+                  <Link key={path} to={path} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-800">{label}</Link>
+                ))}
+                <Link to="/register-provider" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-semibold text-blue-700 hover:bg-blue-50">Register as a provider</Link>
+                {user ? (
+                  <>
+                    <Link to={dashboardPath} onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-blue-50">
+                      {user.role === 'admin' ? <Settings className="h-4 w-4" /> : <Briefcase className="h-4 w-4" />} Account dashboard
+                    </Link>
+                    <button type="button" onClick={handleLogout} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-red-600 hover:bg-red-50"><LogOut className="h-4 w-4" /> Sign out</button>
+                  </>
+                ) : (
+                  <Link to="/register" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-semibold text-blue-700 hover:bg-blue-50">Create an account</Link>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </header>
+      <MobileNavigation user={user} />
+    </>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
 import { useAuthStore } from '../store';
@@ -10,6 +10,10 @@ export default function Booking() {
   const user = useAuthStore((state) => state.user);
 
   const [step, setStep] = useState(1);
+  const [services, setServices] = useState([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
+  const [servicesError, setServicesError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     serviceId: location.state?.serviceId || '',
     date: '',
@@ -30,10 +34,22 @@ export default function Booking() {
     paymentMethod: 'Cash on Service',
   });
 
-  const timeSlots = [
-    '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
-    '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'
-  ];
+  useEffect(() => {
+    let active = true;
+    api.get('/services')
+      .then(({ data }) => {
+        if (active) setServices(data.services || []);
+      })
+      .catch(() => {
+        if (active) setServicesError('We could not load available services. Please try again shortly.');
+      })
+      .finally(() => {
+        if (active) setServicesLoading(false);
+      });
+    return () => { active = false; };
+  }, []);
+
+  const selectedService = services.find((service) => service._id === formData.serviceId);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,6 +78,7 @@ export default function Booking() {
       return;
     }
 
+    setSubmitting(true);
     try {
       // First, get service details to calculate amount
       const serviceResponse = await api.get(`/services/${formData.serviceId}`);
@@ -80,6 +97,8 @@ export default function Booking() {
       });
     } catch (error) {
       alert(error.response?.data?.message || 'Booking failed');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -98,7 +117,7 @@ export default function Booking() {
                   key={s}
                   className={`p-3 rounded-lg cursor-pointer transition ${
                     s <= step
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-blue-700 text-white'
                       : 'bg-gray-200 text-gray-700'
                   }`}
                 >
@@ -117,23 +136,40 @@ export default function Booking() {
             <div>
               <h2 className="text-2xl font-bold mb-6">Select a Service</h2>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Service ID
+                <label htmlFor="serviceId" className="block text-sm font-medium text-gray-700 mb-2">
+                  Service
                 </label>
-                <input
-                  type="text"
+                <select
+                  id="serviceId"
                   name="serviceId"
                   value={formData.serviceId}
                   onChange={handleChange}
-                  placeholder="Enter Service ID or select from services page"
                   className="input-field"
                   required
-                />
+                >
+                  <option value="">Choose a service</option>
+                  {services.map((service) => (
+                    <option key={service._id} value={service._id}>
+                      {service.name} — ₹{service.basePrice}
+                    </option>
+                  ))}
+                </select>
+                {!servicesLoading && !servicesError && services.length === 0 && (
+                  <p className="mt-2 text-sm text-slate-600">No services are available to book right now.</p>
+                )}
+                {servicesError && <p role="alert" className="mt-2 text-sm text-red-700">{servicesError}</p>}
+                {selectedService?.availableTime && (
+                  <p className="mt-2 text-sm text-slate-600">Provider availability: {selectedService.availableTime}</p>
+                )}
+                {selectedService?.basePrice != null && (
+                  <p className="mt-3 font-bold text-blue-800">Starting price: ₹{selectedService.basePrice}</p>
+                )}
               </div>
               <button
                 type="button"
-                onClick={() => setStep(2)}
-                className="btn-primary mt-6 flex items-center space-x-2"
+                onClick={() => formData.serviceId && setStep(2)}
+                disabled={!selectedService || servicesLoading || Boolean(servicesError)}
+                className="btn-primary mt-6 flex items-center space-x-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <span>Next</span>
                 <ArrowRight size={20} />
@@ -161,23 +197,18 @@ export default function Booking() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="timeSlot" className="block text-sm font-medium text-gray-700 mb-2">
                     Preferred Time
                   </label>
-                  <select
+                  <input
+                    type="time"
+                    id="timeSlot"
                     name="timeSlot"
                     value={formData.timeSlot}
                     onChange={handleChange}
                     className="input-field"
                     required
-                  >
-                    <option value="">Select time slot</option>
-                    {timeSlots.map((slot) => (
-                      <option key={slot} value={slot}>
-                        {slot}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
               </div>
 
@@ -205,7 +236,7 @@ export default function Booking() {
             <div>
               <h2 className="text-2xl font-bold mb-6">Enter Details</h2>
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Full Name
@@ -253,7 +284,7 @@ export default function Booking() {
                     <MapPin size={20} />
                     <span>Service Address</span>
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <input
                       type="text"
                       name="location.street"
@@ -339,8 +370,8 @@ export default function Booking() {
                 >
                   Back
                 </button>
-                <button type="submit" className="btn-primary flex-1">
-                  Confirm Booking
+                <button type="submit" disabled={submitting} className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60">
+                  {submitting ? 'Submitting...' : 'Confirm Booking'}
                 </button>
               </div>
             </div>

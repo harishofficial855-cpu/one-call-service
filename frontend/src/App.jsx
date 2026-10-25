@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { useAuthStore } from './store';
 
@@ -11,6 +11,9 @@ import Register from './pages/Register';
 import RegisterProvider from './pages/RegisterProvider';
 import CustomerDashboard from './pages/CustomerDashboard';
 import MyBookings from './pages/MyBookings';
+import Booking from './pages/Booking';
+import BookingConfirmation from './pages/BookingConfirmation';
+import Notifications from './pages/Notifications';
 import ProviderDashboard from './pages/ProviderDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
@@ -27,7 +30,8 @@ import AnalyticsTracker from './components/AnalyticsTracker';
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const user = useAuthStore((state) => state.user);
-  if (!user) return <Navigate to={requiredRole === 'admin' ? '/admin' : '/login'} />;
+  const location = useLocation();
+  if (!user) return <Navigate to={requiredRole === 'admin' ? '/admin' : '/login'} state={{ from: location }} replace />;
   if (requiredRole && user.role !== requiredRole) return <Navigate to="/" />;
   return children;
 };
@@ -47,12 +51,15 @@ export default function App() {
       <AnalyticsTracker />
       <div className="flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-grow">
+        <main className="flex-grow pb-20 md:pb-0">
           <Routes>
             {/* Public */}
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
             <Route path="/services/:id" element={<ServiceDetails />} />
+            <Route path="/booking" element={<ProtectedRoute requiredRole="customer"><Booking /></ProtectedRoute>} />
+            <Route path="/booking/confirmation/:bookingId" element={<ProtectedRoute requiredRole="customer"><BookingConfirmation /></ProtectedRoute>} />
+            <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
             <Route path="/offers" element={<Offers />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />

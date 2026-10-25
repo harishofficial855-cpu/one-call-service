@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuthStore } from '../store';
 import { User, Mail, Phone, Lock, Briefcase, MapPin, Clock, DollarSign, FileText, Image, ChevronDown } from 'lucide-react';
@@ -24,6 +24,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const loginStore = useAuthStore((s) => s.login);
 
   const isProvider = form.role === 'provider';
@@ -40,7 +41,11 @@ export default function Register() {
       const { data } = await api.post('/auth/register', form);
       loginStore(data.user, data.token);
       const redirect = { admin: '/admin/dashboard', provider: '/provider/dashboard', customer: '/dashboard' };
-      navigate(redirect[data.user.role] || '/');
+      const returnTo = location.state?.from;
+      navigate(returnTo?.pathname || redirect[data.user.role] || '/', {
+        state: returnTo?.state,
+        replace: true,
+      });
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     } finally {

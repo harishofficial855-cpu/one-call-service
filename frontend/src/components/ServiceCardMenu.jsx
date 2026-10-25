@@ -39,22 +39,22 @@ export default function ServiceCardMenu({ service, onDeleted, onEdit }) {
   const providerPhone = service.phone ? service.phone.replace(/\D/g, '').slice(-10) : null;
   const waMsg = encodeURIComponent(`Hi, I found your service "${service.name}" on One Call Service. I'd like to know more.`);
 
-  const menuItemCls = 'w-full flex items-center space-x-3 px-4 py-3 text-[#5c4a2a] hover:bg-amber-50 hover:text-amber-700 transition-colors text-sm font-medium';
+  const menuItemCls = 'w-full flex items-center space-x-3 px-4 py-3 text-slate-700 hover:bg-blue-50 hover:text-blue-800 transition-colors text-sm font-medium';
 
   return (
     <div ref={menuRef} className="relative" onClick={(e) => e.stopPropagation()}>
       <button
         onClick={() => setOpen((p) => !p)}
-        className="w-8 h-8 flex items-center justify-center rounded-full bg-white/70 hover:bg-amber-100 backdrop-blur-sm text-[#2c2416] hover:text-amber-700 transition-all"
+        className="w-8 h-8 flex items-center justify-center rounded-full bg-white/70 hover:bg-blue-100 backdrop-blur-sm text-slate-800 hover:text-blue-700 transition-all"
         title="Options"
       >
         <MoreVertical className="w-4 h-4" />
       </button>
 
       {open && (
-        <div className="absolute top-10 right-0 w-52 bg-[#fffef9] border border-[#e8e0cc] rounded-2xl shadow-xl shadow-amber-100 overflow-hidden z-50 animate-fade-in">
+        <div className="absolute top-10 right-0 w-52 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-blue-100 z-50 animate-fade-in">
           <button onClick={() => { setOpen(false); navigate(`/services/${service._id}`); }} className={menuItemCls}>
-            <Eye className="w-4 h-4 text-amber-500" />
+            <Eye className="w-4 h-4 text-blue-600" />
             <span>View Details</span>
           </button>
 
@@ -73,11 +73,11 @@ export default function ServiceCardMenu({ service, onDeleted, onEdit }) {
             </a>
           )}
 
-          <div className="border-t border-[#e8e0cc] mx-3 my-1" />
+          <div className="mx-3 my-1 border-t border-slate-200" />
 
           {isAdmin && (
             <button onClick={() => { setOpen(false); onEdit(service); }} className={menuItemCls}>
-              <Pencil className="w-4 h-4 text-amber-500" />
+              <Pencil className="w-4 h-4 text-blue-600" />
               <span>Edit Service</span>
             </button>
           )}
@@ -100,21 +100,21 @@ export default function ServiceCardMenu({ service, onDeleted, onEdit }) {
           onClick={() => !deleting && setConfirmOpen(false)}
         >
           <div
-            className="bg-[#fffef9] border border-[#e8e0cc] rounded-2xl p-6 w-full max-w-sm shadow-xl"
+            className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-12 h-12 bg-red-50 border border-red-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Trash2 className="w-6 h-6 text-red-500" />
             </div>
-            <h3 className="text-[#2c2416] font-bold text-lg text-center mb-2">Delete Service</h3>
-            <p className="text-[#7a6a4a] text-sm text-center mb-6">
-              Are you sure you want to delete <span className="text-amber-600 font-semibold">"{service.name}"</span>? This cannot be undone.
+            <h3 className="text-center text-lg font-bold text-slate-900 mb-2">Delete Service</h3>
+            <p className="mb-6 text-center text-sm text-slate-600">
+              Are you sure you want to delete <span className="font-semibold text-blue-700">"{service.name}"</span>? This cannot be undone.
             </p>
             <div className="flex space-x-3">
               <button
                 onClick={() => setConfirmOpen(false)}
                 disabled={deleting}
-                className="flex-1 px-4 py-2.5 bg-[#f0ebe0] hover:bg-[#e8e0cc] text-[#2c2416] rounded-xl font-semibold text-sm transition-all disabled:opacity-50"
+                className="flex-1 rounded-xl bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-800 transition-all hover:bg-slate-200 disabled:opacity-50"
               >
                 Cancel
               </button>

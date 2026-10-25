@@ -1,359 +1,307 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  ArrowRight, BadgeCheck, Clock3, MapPin, Search, ShieldCheck,
+  Sparkles, Star, Wrench, Zap, Droplets, SprayCan, Scissors,
+  Paintbrush, Computer, ChefHat, Shield, Tent, HeartPulse,
+  HeartHandshake, Flower2, HelpCircle, UserCircle,
+} from 'lucide-react';
 import api from '../services/api';
-import { Star, ArrowRight, Shield, Clock, Award, Users, Sparkles, ChevronRight, Phone, MapPin, MessageCircle } from 'lucide-react';
 import ServiceCardMenu from '../components/ServiceCardMenu';
 import EditServiceModal from '../components/EditServiceModal';
 import Toast from '../components/Toast';
-import { trackProviderClick } from '../services/tracking';
 
-export const CATEGORY_META = {
-  'Haircut':                   { icon: '✂️',  color: 'from-pink-400 to-rose-400' },
-  'Women Haircut':             { icon: '💇♀️', color: 'from-purple-400 to-pink-400' },
-  'Plumber':                   { icon: '🔧',  color: 'from-blue-400 to-cyan-400' },
-  'Electrician':               { icon: '⚡',  color: 'from-yellow-400 to-amber-400' },
-  'Water Tank Cleaning':       { icon: '💧',  color: 'from-cyan-400 to-blue-400' },
-  'House Cleaning':            { icon: '🧹',  color: 'from-green-400 to-emerald-400' },
-  'Painting Service':          { icon: '🎨',  color: 'from-amber-400 to-orange-400' },
-  'Electronics Repair Service':{ icon: '🔌',  color: 'from-violet-400 to-indigo-400' },
-  'Reels / Event Video Shoot': { icon: '🎬',  color: 'from-violet-400 to-purple-400' },
-  'Chef':                      { icon: '👨🍳', color: 'from-orange-400 to-red-400' },
-  'Security':                  { icon: '🛡️',  color: 'from-slate-400 to-slate-500' },
-  'Water Can':                 { icon: '🪣',  color: 'from-teal-400 to-cyan-400' },
-  'Tent Service':              { icon: '⛺',  color: 'from-amber-400 to-yellow-400' },
-  'Goat Cutter':               { icon: '🐐',  color: 'from-lime-400 to-green-400' },
-  'Chicken Cutter':            { icon: '🍗',  color: 'from-red-400 to-orange-400' },
-  'Yoga & Diet Teacher':       { icon: '🧘',  color: 'from-emerald-400 to-teal-400' },
-  'Nurse':                     { icon: '👩⚕️', color: 'from-blue-300 to-indigo-400' },
-  'Physiotherapy':             { icon: '💪',  color: 'from-indigo-400 to-blue-500' },
-  'Food Diet Teacher':         { icon: '🥗',  color: 'from-green-300 to-emerald-400' },
-  'Caretaker':                 { icon: '🤝',  color: 'from-rose-300 to-pink-400' },
-  'Other':                     { icon: '🛠️',  color: 'from-stone-400 to-stone-500' },
-};
-
-const stats = [
-  { value: '10K+', label: 'Happy Customers' },
-  { value: '500+', label: 'Expert Providers' },
-  { value: '50+',  label: 'Services' },
-  { value: '4.9★', label: 'Average Rating' },
+const CATEGORY_ICONS = [
+  [/haircut/i, Scissors],
+  [/plumb/i, Wrench],
+  [/electric/i, Zap],
+  [/water/i, Droplets],
+  [/clean/i, SprayCan],
+  [/paint/i, Paintbrush],
+  [/electronic|repair/i, Computer],
+  [/chef|food/i, ChefHat],
+  [/security/i, Shield],
+  [/tent/i, Tent],
+  [/nurse|physio/i, HeartPulse],
+  [/care/i, HeartHandshake],
+  [/yoga|diet/i, Flower2],
 ];
 
-const features = [
-  { icon: Shield, title: 'Verified Experts',    desc: 'All providers are background-checked and certified' },
-  { icon: Clock,  title: 'On-Time Service',     desc: 'Punctual professionals who respect your time' },
-  { icon: Award,  title: 'Quality Guaranteed',  desc: '100% satisfaction or we redo the service free' },
-  { icon: Users,  title: '24/7 Support',        desc: 'Round-the-clock customer assistance' },
-];
+export function getCategoryIcon(category) {
+  return CATEGORY_ICONS.find(([pattern]) => pattern.test(category))?.[1] || HelpCircle;
+}
 
-const SLIDES = [
-  {
-    video: 'https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4',
-    tag: 'Professional Home Services',
-    title: 'Expert Services',
-    highlight: 'At Your Door',
-    sub: 'Book verified professionals for all your home needs. Fast, reliable, and affordable.',
-  },
-  {
-    video: 'https://videos.pexels.com/video-files/4253925/4253925-uhd_2560_1440_25fps.mp4',
-    tag: 'Trusted & Verified Experts',
-    title: 'Quality Work,',
-    highlight: 'Guaranteed Results',
-    sub: 'All our service providers are background-checked, trained, and certified professionals.',
-  },
-  {
-    video: 'https://videos.pexels.com/video-files/3209828/3209828-uhd_2560_1440_25fps.mp4',
-    tag: 'Book in 60 Seconds',
-    title: 'One Call,',
-    highlight: 'All Solutions',
-    sub: 'From plumbing to cleaning, electrical to haircuts — we cover every home service need.',
-  },
-];
+function Hero({ onSearch }) {
+  const [query, setQuery] = useState('');
+  const navigate = useNavigate();
 
-function HeroSlider() {
-  const [current, setCurrent] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  useEffect(() => {
-    if (isPaused) return undefined;
+  const submitSearch = (event) => {
+    event.preventDefault();
+    const params = new URLSearchParams();
+    if (query.trim()) params.set('search', query.trim());
+    onSearch(params.toString());
+  };
 
-    const t = setInterval(() => setCurrent(p => (p + 1) % SLIDES.length), 6000);
-    return () => clearInterval(t);
-  }, [isPaused]);
-  const slide = SLIDES[current];
   return (
-    <section className="relative overflow-hidden min-h-screen flex items-center">
-      {SLIDES.map((s, i) => (
-        <video key={i} src={s.video} autoPlay muted loop playsInline
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${i === current ? 'opacity-100' : 'opacity-0'}`} />
-      ))}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-black/25" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-      <div className="container-custom relative z-10 py-24">
-        <div className="max-w-3xl">
-          <div key={current} className="animate-fade-in">
-            <div className="inline-flex items-center space-x-2 bg-amber-500/20 border border-amber-400/40 rounded-full px-4 py-2 mb-6 backdrop-blur-sm">
-              <Sparkles className="w-4 h-4 text-amber-300" />
-              <span className="text-amber-200 text-sm font-semibold">{slide.tag}</span>
-            </div>
-            <h1 className="text-5xl md:text-7xl font-black text-white leading-tight mb-6 drop-shadow-2xl">
-              {slide.title}<br />
-              <span className="gradient-text">{slide.highlight}</span>
-            </h1>
-            <p className="text-xl text-stone-200 mb-10 max-w-xl leading-relaxed drop-shadow-lg">{slide.sub}</p>
+    <section className="relative isolate overflow-hidden bg-[#0b1d3b]">
+      <img
+        src="https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=2200&q=85"
+        alt="Home-service professional working on an electrical repair"
+        className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
+      />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#071a3c]/95 via-[#0c2a59]/80 to-[#0c2a59]/25" />
+      <div className="container-custom flex min-h-[520px] items-center py-16 sm:min-h-[600px] lg:min-h-[640px]">
+        <div className="max-w-2xl">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-semibold text-blue-100 backdrop-blur">
+            <Sparkles className="h-4 w-4" aria-hidden="true" />
+            Home services, made simple
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 mb-14">
-            <Link to="/services" className="btn-primary flex items-center justify-center space-x-2 text-base">
-              <span>Explore Services</span><ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link to="/register-provider" className="btn-secondary flex items-center justify-center space-x-2 text-base backdrop-blur-sm">
-              <span>Register Your Service</span>
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-            {stats.map((s) => (
-              <div key={s.label}>
-                <p className="text-3xl font-black text-amber-300 drop-shadow-lg">{s.value}</p>
-                <p className="text-stone-300 text-sm mt-1">{s.label}</p>
-              </div>
-            ))}
-          </div>
+          <h1 className="max-w-xl text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Your Home,
+            <span className="block text-blue-200">Our Priority</span>
+          </h1>
+          <p className="mt-5 max-w-lg text-base leading-7 text-blue-50/90 sm:text-lg">
+            Find a service that fits your needs and connect with local professionals.
+          </p>
+          <form onSubmit={submitSearch} className="mt-8 flex max-w-xl flex-col gap-2 rounded-2xl bg-white p-2 shadow-2xl shadow-blue-950/30 sm:flex-row">
+            <label className="flex min-w-0 flex-1 items-center gap-3 px-3">
+              <Search className="h-5 w-5 shrink-0 text-blue-600" aria-hidden="true" />
+              <span className="sr-only">Search services</span>
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="What service do you need?"
+                className="min-w-0 flex-1 py-3 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+              />
+            </label>
+            <button type="submit" className="rounded-xl bg-blue-700 px-6 py-3 font-bold text-white transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+              Find a service
+            </button>
+          </form>
+          <button
+            type="button"
+            onClick={() => navigate('/services')}
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white/90 transition hover:text-white"
+          >
+            Browse all available services <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </button>
         </div>
-      </div>
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10">
-        <div className="flex items-center space-x-2">
-          {SLIDES.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setCurrent(i)}
-              aria-label={`Show slide ${i + 1}: ${SLIDES[i].tag}`}
-              aria-current={i === current ? 'true' : undefined}
-              className={`transition-all rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300 focus:ring-offset-2 focus:ring-offset-[#1c1408] ${i === current
-                  ? 'w-8 h-2 bg-amber-400'
-                  : 'w-2 h-2 bg-white/40 hover:bg-white/70'
-                }`}
-            />
-          ))}
-        </div>
-        <button
-          type="button"
-          onClick={() => setIsPaused((paused) => !paused)}
-          aria-label={isPaused ? 'Resume automatic slide rotation' : 'Pause automatic slide rotation'}
-          className="text-xs font-semibold text-white/80 hover:text-white focus:outline-none focus:ring-2 focus:ring-amber-300 rounded"
-        >
-          {isPaused ? 'Resume slides' : 'Pause slides'}
-        </button>
       </div>
     </section>
   );
 }
 
-function ProviderCard({ service, onDeleted, onEdit }) {
-  const cat = CATEGORY_META[service.category] || CATEGORY_META['Other'];
-  const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(service.providerName || service.name)}&background=d97706&color=fff&size=128`;
+export function ServiceCard({ service, onDeleted, onEdit }) {
+  const CategoryIcon = getCategoryIcon(service.category || '');
+  const image = service.image || '';
+  const [imageFailed, setImageFailed] = useState(false);
+  const [profileImageFailed, setProfileImageFailed] = useState(false);
 
   return (
-    <div className="card-shadow overflow-hidden group flex flex-col">
-      <div className={`h-28 bg-gradient-to-br ${cat.color} flex items-center justify-center relative`}>
-        <div className="absolute inset-0 bg-white/10" />
-        <span className="text-5xl relative z-10 group-hover:scale-110 transition-transform duration-300">{cat.icon}</span>
-        {service.rating > 0 && (
-          <div className="absolute top-3 left-3 bg-white/80 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
-            <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-            <span className="text-[#2c2416] text-xs font-bold">{service.rating.toFixed(1)}</span>
+    <article className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-950/10">
+      <Link to={`/services/${service._id}`} className="relative block h-48 overflow-hidden bg-blue-50" aria-label={`View ${service.name}`}>
+        {image && !imageFailed ? (
+          <img src={image} alt={service.name} loading="lazy" onError={() => setImageFailed(true)} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+        ) : (
+          <div className="flex h-full items-center justify-center bg-gradient-to-br from-blue-50 to-sky-100">
+            <CategoryIcon className="h-14 w-14 text-blue-600" strokeWidth={1.5} aria-hidden="true" />
           </div>
         )}
-        <div className="absolute top-3 right-3 z-20">
+        <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-blue-800 shadow-sm">
+          {service.category}
+        </span>
+        {service.rating > 0 && service.reviewCount > 0 && (
+          <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-lg bg-white/95 px-2.5 py-1.5 text-xs font-bold text-slate-800">
+            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
+            {service.rating.toFixed(1)} <span className="font-medium text-slate-500">({service.reviewCount})</span>
+          </span>
+        )}
+      </Link>
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <Link to={`/services/${service._id}`} className="text-lg font-bold text-slate-900 transition hover:text-blue-700">
+              {service.name}
+            </Link>
+            {service.providerName && (
+              <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500">
+                {service.profilePhoto && !profileImageFailed
+                  ? <img src={service.profilePhoto} alt="" onError={() => setProfileImageFailed(true)} className="h-5 w-5 rounded-full object-cover" />
+                  : <UserCircle className="h-4 w-4 text-blue-600" aria-hidden="true" />}
+                <span>{service.providerName}</span>
+                <BadgeCheck className="h-4 w-4 text-blue-600" aria-hidden="true" />
+              </p>
+            )}
+          </div>
+          {service.basePrice != null && (
+            <p className="shrink-0 text-right text-lg font-extrabold text-blue-800">
+              ₹{service.basePrice}
+              <span className="block text-[11px] font-medium text-slate-400">starting price</span>
+            </p>
+          )}
+        </div>
+        {service.description && <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">{service.description}</p>}
+        {(service.serviceLocation || service.estimatedTime || service.availableTime) && (
+          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-500">
+            {service.serviceLocation && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5 text-blue-600" />{service.serviceLocation}</span>}
+            {(service.estimatedTime || service.availableTime) && <span className="inline-flex items-center gap-1"><Clock3 className="h-3.5 w-3.5 text-blue-600" />{service.estimatedTime || service.availableTime}</span>}
+          </div>
+        )}
+        <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+          <Link to={`/services/${service._id}`} className="inline-flex items-center gap-2 text-sm font-bold text-blue-700 hover:text-blue-900">
+            View details <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
           <ServiceCardMenu service={service} onDeleted={onDeleted} onEdit={onEdit} />
         </div>
-        <div className="absolute -bottom-8 left-5 z-10">
-          <img
-            src={service.profilePhoto || fallbackAvatar}
-            alt={service.providerName || service.name}
-            onError={(e) => { e.target.src = fallbackAvatar; }}
-            className="w-16 h-16 rounded-2xl object-cover border-4 border-[#fffef9] shadow-md"
-          />
-        </div>
       </div>
-
-      <div className="pt-10 px-5 pb-5 flex flex-col flex-1">
-        <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">{service.category}</span>
-        <h3 className="text-[#2c2416] font-black text-lg mt-0.5 mb-1">{service.name}</h3>
-        {service.providerName && (
-          <p className="text-[#5c4a2a] text-sm font-semibold mb-2">👤 {service.providerName}</p>
-        )}
-        <p className="text-[#7a6a4a] text-sm mb-3 line-clamp-2 flex-1">{service.description}</p>
-
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#b8a98a] mb-4">
-          {service.serviceLocation && (
-            <span className="flex items-center gap-1"><MapPin size={12} className="text-amber-500" />{service.serviceLocation}</span>
-          )}
-          {service.experience && (
-            <span className="flex items-center gap-1"><Clock size={12} className="text-amber-500" />{service.experience}</span>
-          )}
-          {service.availableTime && (
-            <span className="flex items-center gap-1">🕐 {service.availableTime}</span>
-          )}
-        </div>
-
-        <div className="flex items-center justify-end gap-2 mt-auto">
-          <div className="flex gap-2">
-            {service.phone && (
-              <>
-                <a href={`tel:${service.phone}`} onClick={() => trackProviderClick(service._id, 'call')}
-                  className="flex items-center gap-1 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-xs font-bold transition-all">
-                  <Phone size={12} /> Call
-                </a>
-                <a href={`https://wa.me/91${service.phone.replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent(`Hi, I found your service "${service.name}" on One Call Service. I'd like to know more.`)}`}
-                  onClick={() => trackProviderClick(service._id, 'whatsapp')}
-                  target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all">
-                  <MessageCircle size={12} /> WhatsApp
-                </a>
-              </>
-            )}
-            <Link to={`/services/${service._id}`}
-              className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg text-xs font-black transition-all">
-              View <ArrowRight size={12} />
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+    </article>
   );
 }
 
 export default function Home() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [editService, setEditService] = useState(null);
   const [toast, setToast] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    let active = true;
     api.get('/services')
-      .then(r => setServices(r.data.services?.slice(0, 6) || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .then(({ data }) => {
+        if (active) setServices(data.services || []);
+      })
+      .catch(() => {
+        if (active) setLoadError('We could not load services right now. Please try again shortly.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => { active = false; };
   }, []);
+
+  const categories = useMemo(
+    () => [...new Set(services.map((service) => service.category).filter(Boolean))],
+    [services]
+  );
 
   const showToast = useCallback((message, type = 'success') => setToast({ message, type }), []);
   const handleDeleted = useCallback((id, message, type = 'success') => {
-    if (id) setServices(prev => prev.filter(s => s._id !== id));
+    if (id) setServices((current) => current.filter((service) => service._id !== id));
     showToast(message, type);
   }, [showToast]);
   const handleSaved = useCallback((updated) => {
-    setServices(prev => prev.map(s => s._id === updated._id ? updated : s));
+    setServices((current) => current.map((service) => service._id === updated._id ? updated : service));
     setEditService(null);
     showToast('Service updated successfully.');
   }, [showToast]);
 
-  return (
-    <div className="w-full bg-[#faf8f3]">
-      <HeroSlider />
+  const goToSearch = (search) => navigate(search ? `/services?${search}` : '/services');
 
-      {/* How It Works */}
-      <section className="py-20 bg-[#f5f0e8]">
-        <div className="container-custom">
-          <div className="text-center mb-14">
-            <p className="text-amber-600 font-semibold text-sm uppercase tracking-widest mb-3">Simple Process</p>
-            <h2 className="text-4xl font-black text-[#2c2416]">How It Works</h2>
+  return (
+    <div className="w-full bg-slate-50">
+      <Hero onSearch={goToSearch} />
+
+      <section className="container-custom py-14 sm:py-20">
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.16em] text-blue-700">Explore</p>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Service categories</h2>
+            <p className="mt-2 text-slate-600">Choose from categories with services currently available.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[
-              { n: '01', title: 'Choose Service', desc: 'Browse our wide range of professional services' },
-              { n: '02', title: 'Call Provider',  desc: 'Directly call or WhatsApp the service provider' },
-              { n: '03', title: 'Confirm Details', desc: 'Share your address and specific requirements' },
-              { n: '04', title: 'Get It Done',    desc: 'Expert arrives on time and completes the job' },
-            ].map((step, i) => (
-              <div key={i} className="relative">
-                <div className="card-shadow p-6 text-center h-full">
-                  <div className="text-5xl font-black text-amber-200 mb-3">{step.n}</div>
-                  <h3 className="text-[#2c2416] font-bold text-lg mb-2">{step.title}</h3>
-                  <p className="text-[#7a6a4a] text-sm">{step.desc}</p>
-                </div>
-                {i < 3 && <ChevronRight className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 text-amber-300 z-10" />}
-              </div>
-            ))}
-          </div>
+          <Link to="/services" className="hidden items-center gap-2 pb-1 text-sm font-bold text-blue-700 hover:text-blue-900 sm:inline-flex">
+            All services <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
+        {loading ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {Array.from({ length: 5 }, (_, index) => <div key={index} className="h-28 animate-pulse rounded-2xl bg-slate-200" />)}
+          </div>
+        ) : loadError ? (
+          <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-800">{loadError}</div>
+        ) : categories.length ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {categories.map((category) => {
+              const CategoryIcon = getCategoryIcon(category);
+              return (
+                <Link
+                  key={category}
+                  to={`/services?category=${encodeURIComponent(category)}`}
+                  className="group flex min-h-28 items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg"
+                >
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700 transition group-hover:bg-blue-700 group-hover:text-white">
+                    <CategoryIcon className="h-6 w-6" aria-hidden="true" />
+                  </span>
+                  <span className="text-sm font-bold leading-5 text-slate-800">{category}</span>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="rounded-2xl border border-slate-200 bg-white px-6 py-8 text-center text-slate-600">No services available right now.</p>
+        )}
       </section>
 
-      {/* Services */}
-      <section className="py-20 bg-[#faf8f3]">
+      <section className="bg-white py-14 sm:py-20">
         <div className="container-custom">
-          <div className="flex items-end justify-between mb-14">
+          <div className="mb-8 flex items-end justify-between gap-4">
             <div>
-              <p className="text-amber-600 font-semibold text-sm uppercase tracking-widest mb-3">What We Offer</p>
-              <h2 className="text-4xl font-black text-[#2c2416]">Our Services</h2>
+              <p className="text-sm font-bold uppercase tracking-[0.16em] text-blue-700">Available now</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Services near you</h2>
             </div>
-            <Link to="/services" className="hidden md:flex items-center space-x-2 text-amber-600 hover:text-amber-700 font-semibold transition-colors">
-              <span>View All</span><ArrowRight className="w-4 h-4" />
+            <Link to="/services" className="hidden items-center gap-2 pb-1 text-sm font-bold text-blue-700 hover:text-blue-900 sm:inline-flex">
+              Browse services <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="card-shadow h-72 animate-pulse bg-[#f0ebe0] rounded-2xl" />
-              ))}
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }, (_, index) => <div key={index} className="h-80 animate-pulse rounded-2xl bg-slate-100" />)}
             </div>
-          ) : services.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((service) => (
-                <ProviderCard key={service._id} service={service} onDeleted={handleDeleted} onEdit={setEditService} />
+          ) : loadError ? (
+            <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-800">{loadError}</div>
+          ) : services.length ? (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {services.slice(0, 6).map((service) => (
+                <ServiceCard key={service._id} service={service} onDeleted={handleDeleted} onEdit={setEditService} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <p className="text-5xl mb-4">🛠️</p>
-              <p className="text-[#7a6a4a] text-lg mb-4">No services registered yet.</p>
-              <Link to="/register-provider" className="btn-primary inline-flex">Be the first to register!</Link>
-            </div>
-          )}
-
-          <div className="text-center mt-10 md:hidden">
-            <Link to="/services" className="btn-secondary">View All Services</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Us */}
-      <section className="py-20 bg-[#f5f0e8]">
-        <div className="container-custom">
-          <div className="text-center mb-14">
-            <p className="text-amber-600 font-semibold text-sm uppercase tracking-widest mb-3">Why Us</p>
-            <h2 className="text-4xl font-black text-[#2c2416]">The One Call Difference</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="card-shadow p-6 text-center group">
-                <div className="w-14 h-14 bg-amber-100 border border-amber-200 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-amber-200 transition-all">
-                  <Icon className="w-7 h-7 text-amber-600" />
-                </div>
-                <h3 className="text-[#2c2416] font-bold mb-2">{title}</h3>
-                <p className="text-[#7a6a4a] text-sm">{desc}</p>
+            <div className="rounded-3xl border border-dashed border-blue-200 bg-blue-50/60 px-6 py-14 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-blue-700 shadow-sm">
+                <Wrench className="h-7 w-7" aria-hidden="true" />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Register CTA */}
-      <section className="py-20 bg-[#faf8f3]">
-        <div className="container-custom">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-500 to-amber-600 p-10 md:p-16">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2" />
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-              <div>
-                <p className="text-amber-100 font-semibold mb-2">Are you a service professional?</p>
-                <h2 className="text-4xl font-black text-white mb-2">Register Your Service Today</h2>
-                <p className="text-amber-100">Reach thousands of customers in your area — it's free to register.</p>
-              </div>
-              <Link to="/register-provider"
-                className="flex-shrink-0 bg-white text-amber-700 font-black px-8 py-4 rounded-2xl hover:bg-amber-50 transition-all shadow-xl text-lg whitespace-nowrap">
-                Register Now →
+              <h3 className="mt-4 text-xl font-bold text-slate-900">No services available right now.</h3>
+              <p className="mt-2 text-sm text-slate-600">Please check back later or browse all service listings.</p>
+              <Link to="/services" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white hover:bg-blue-800">
+                Browse services <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
+          )}
+          <Link to="/services" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-white px-5 py-3 text-sm font-bold text-blue-700 hover:bg-blue-50 sm:hidden">
+            View all services <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+
+      <section className="container-custom py-14 sm:py-20">
+        <div className="rounded-3xl bg-gradient-to-br from-blue-950 via-blue-800 to-blue-700 px-6 py-10 text-white sm:px-10 sm:py-12">
+          <div className="max-w-3xl">
+            <p className="text-sm font-bold uppercase tracking-[0.16em] text-blue-200">One Call Service</p>
+            <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">A simpler way to find the help you need.</h2>
+            <p className="mt-4 max-w-2xl leading-7 text-blue-100">Explore current listings, review the service details, and book directly through One Call Service.</p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Link to="/services" className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-bold text-blue-800 transition hover:bg-blue-50">
+                Find a service <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link to="/register-provider" className="inline-flex items-center justify-center rounded-xl border border-white/40 px-5 py-3 font-bold text-white transition hover:bg-white/10">
+                Register as a provider
+              </Link>
+            </div>
+          </div>
+          <div className="mt-8 flex flex-wrap gap-4 border-t border-white/15 pt-6 text-sm text-blue-100">
+            <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Real service listings</span>
+            <span className="inline-flex items-center gap-2"><Search className="h-4 w-4" /> Search by service or location</span>
           </div>
         </div>
       </section>
