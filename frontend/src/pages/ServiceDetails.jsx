@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { ArrowLeft, BadgeCheck, Clock3, MapPin, Phone, Star, UserCircle, Wrench } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, Clock3, MapPin, MessageCircle, Phone, Star, UserCircle, Wrench } from 'lucide-react';
+import { trackProviderClick } from '../services/tracking';
 
 export default function ServiceDetails() {
   const { id } = useParams();
@@ -54,6 +55,9 @@ export default function ServiceDetails() {
     );
   }
 
+  const providerPhone = service.phone ? service.phone.replace(/\D/g, '').slice(-10) : '';
+  const whatsappMessage = encodeURIComponent(`Hi, I found your service "${service.name}" on One Call Service. I'd like to know more.`);
+
   return (
     <div className="min-h-screen bg-slate-50 py-8 sm:py-12">
       <div className="container-custom">
@@ -97,10 +101,25 @@ export default function ServiceDetails() {
                 )}
               </div>
 
-              {service.phone && (
-                <a href={`tel:${service.phone}`} className="mt-6 inline-flex items-center gap-2 rounded-xl border border-blue-200 px-4 py-2.5 text-sm font-bold text-blue-700 transition hover:bg-blue-50">
-                  <Phone className="h-4 w-4" aria-hidden="true" /> Call provider
-                </a>
+              {providerPhone && (
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <a
+                    href={`tel:${providerPhone}`}
+                    onClick={() => trackProviderClick(service._id, 'call')}
+                    className="inline-flex items-center gap-2 rounded-xl border border-blue-200 px-4 py-2.5 text-sm font-bold text-blue-700 transition hover:bg-blue-50"
+                  >
+                    <Phone className="h-4 w-4" aria-hidden="true" /> Call provider
+                  </a>
+                  <a
+                    href={`https://wa.me/91${providerPhone}?text=${whatsappMessage}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackProviderClick(service._id, 'whatsapp')}
+                    className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 px-4 py-2.5 text-sm font-bold text-emerald-700 transition hover:bg-emerald-50"
+                  >
+                    <MessageCircle className="h-4 w-4" aria-hidden="true" /> WhatsApp
+                  </a>
+                </div>
               )}
             </div>
           </article>
