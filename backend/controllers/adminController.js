@@ -185,7 +185,7 @@ export const requestAdminPasswordReset = asyncHandler(async (req, res) => {
         $set: { resetCodeHash: null, resetCodeExpiresAt: null, resetCodeAttempts: 0 },
       }
     );
-    console.error('Admin password reset email delivery failed.', error.code || 'SMTP_ERROR');
+    console.error('Admin password reset email delivery failed.', error.code || 'EMAIL_DELIVERY_ERROR');
     return res.status(502).json({
       success: false,
       message: 'Reset email could not be sent. Try again later.',

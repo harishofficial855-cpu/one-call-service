@@ -86,10 +86,8 @@ JWT_EXPIRE=1d
 FRONTEND_URL=http://localhost:5173
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD_HASH=your-initial-bcrypt-hash
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=your_email@example.com
-SMTP_PASSWORD=your_smtp_password
+RESEND_API_KEY=your_resend_api_key
+RESEND_FROM_EMAIL=onboarding@resend.dev
 ```
 
 Generate the JWT secret and bcrypt password hash locally from the `backend` directory:
@@ -199,11 +197,15 @@ registration cannot create admin-role accounts.
 
 ### Admin Password Reset
 
-The admin sign-in page links to `/admin/forgot-password`. Configure working
-SMTP credentials on the backend using `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
-and `SMTP_PASSWORD`; port 465 uses implicit TLS, while other ports use standard
-SMTP transport security. The sender address is `SMTP_USER`. The application
-does not report a reset code as sent when SMTP is missing or delivery fails.
+The admin sign-in page links to `/admin/forgot-password`. Configure
+`RESEND_API_KEY` and `RESEND_FROM_EMAIL` in the backend environment. The
+application sends reset emails through the Resend API and does not report a
+reset code as sent when configuration is missing or delivery fails. Resend
+requires a verified sending domain for production. `onboarding@resend.dev` is
+intended for testing and can only deliver to the Resend account's own email
+address; use a sender address on your verified domain in production. Keep the
+API key only in Render's backend environment, never in source control or
+frontend variables.
 
 The backend stores only a bcrypt hash of each randomly generated code. Codes
 expire after 10 minutes, are invalidated after five failed verification
@@ -281,10 +283,8 @@ messages sent, or bookings completed. GA4 SPA page views use
 | `JWT_SECRET` | Render/backend | Signs existing user and admin JWTs; use a long random value |
 | `ADMIN_EMAIL` | Render/backend | Dedicated admin login email |
 | `ADMIN_PASSWORD_HASH` | Render/backend | Initial bcrypt hash used to bootstrap the MongoDB admin credential; never plaintext |
-| `SMTP_HOST` | Render/backend | SMTP server hostname for reset emails |
-| `SMTP_PORT` | Render/backend | SMTP server port (465 for implicit TLS; commonly 587 for STARTTLS) |
-| `SMTP_USER` | Render/backend | SMTP username and reset-email sender address |
-| `SMTP_PASSWORD` | Render/backend | SMTP password or provider app password |
+| `RESEND_API_KEY` | Render/backend | Resend API key for reset-email delivery |
+| `RESEND_FROM_EMAIL` | Render/backend | Sender address allowed by Resend (verified domain in production) |
 | `FRONTEND_URL` | Render/backend | Production Vercel origin allowed by CORS |
 | `VITE_API_URL` | Vercel/frontend build | Render API URL ending in `/api` |
 | `VITE_GA_MEASUREMENT_ID` | Vercel/frontend build | Optional GA4 measurement ID override (`G-...`); otherwise the existing property is retained |
@@ -309,8 +309,8 @@ them.
 1. Keep the existing Node/Express service, set its root directory to `backend`,
    build command to `npm install`, and start command to `npm start`.
 2. Configure `MONGODB_URI`, a new random `JWT_SECRET`, `JWT_EXPIRE=1d`,
-   `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
-   `SMTP_PASSWORD`, `FRONTEND_URL` (the exact Vercel production origin), and
+   `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`,
+   `FRONTEND_URL` (the exact Vercel production origin), and
    `NODE_ENV=production` in the Render environment. Use your mail provider's
    approved SMTP credentials; never use a personal account password where an
    app password or service credential is supported.

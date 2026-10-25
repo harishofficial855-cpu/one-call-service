@@ -1,41 +1,34 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-const getSmtpConfiguration = () => {
-  const host = process.env.SMTP_HOST?.trim();
-  const port = Number(process.env.SMTP_PORT);
-  const user = process.env.SMTP_USER?.trim();
-  const password = process.env.SMTP_PASSWORD;
+const getResendConfiguration = () => {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const from = process.env.RESEND_FROM_EMAIL?.trim();
 
-  if (!host || !Number.isInteger(port) || port < 1 || port > 65535 || !user || !password) {
+  if (!apiKey || !from) {
     return null;
   }
 
-  return { host, port, user, password };
+  return { apiKey, from };
 };
 
-export const isEmailConfigured = () => Boolean(getSmtpConfiguration());
+export const isEmailConfigured = () => Boolean(getResendConfiguration());
 
-export const sendAdminPasswordResetCode = async (email, code) => {
-  const configuration = getSmtpConfiguration();
+export const sendAdminPasswordResetCode = async (email, code, createClient = (apiKey) => new Resend(apiKey)) => {
+  const configuration = getResendConfiguration();
   if (!configuration) {
-    throw new Error('SMTP configuration is incomplete');
+    throw new Error('Resend configuration is incomplete');
   }
 
-  const transporter = nodemailer.createTransport({
-    host: configuration.host,
-    port: configuration.port,
-    secure: configuration.port === 465,
-    requireTLS: configuration.port !== 465,
-    auth: { user: configuration.user, pass: configuration.password },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-  });
-
-  await transporter.sendMail({
-    from: configuration.user,
+  const resend = createClient(configuration.apiKey);
+  const { error } = await resend.emails.send({
+    from: configuration.from,
     to: email,
     subject: 'One Call Service admin password reset',
     text: `Your admin password reset code is ${code}. It expires in 10 minutes. If you did not request this, ignore this email.`,
+    html: `<p>Your admin password reset code is <strong>${code}</strong>. It expires in 10 minutes. If you did not request this, ignore this email.</p>`,
   });
+
+  if (error) {
+    throw new Error('Resend email delivery failed');
+  }
 };
